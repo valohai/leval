@@ -6,7 +6,7 @@ from .universe import EvaluationUniverse
 
 
 class Evaluator(ast.NodeTransformer):
-    allowed_constant_classes = (int, float, complex)
+    allowed_constant_classes = (str, int, float, complex)
     max_depth = 10
 
     def __init__(self, universe: EvaluationUniverse):
@@ -55,7 +55,7 @@ class Evaluator(ast.NodeTransformer):
     def visit_Constant(self, node):  # Python 3.8+
         if isinstance(node.value, self.allowed_constant_classes):
             return node.value
-        raise InvalidOperation(f"Invalid constant {node}")
+        raise InvalidOperation(f"Invalid constant {node} ({type(node.value)})")
 
     def visit_Name(self, node):
         if not isinstance(node.ctx, ast.Load):
