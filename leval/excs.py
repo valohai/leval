@@ -1,5 +1,11 @@
+import ast
+from typing import Optional
+
+
 class EvaluatorError(Exception):
-    pass
+    def __init__(self, message: str, *, node: Optional[ast.AST] = None) -> None:
+        super().__init__(message)
+        self.node = node
 
 
 class InvalidOperation(EvaluatorError):
@@ -7,6 +13,10 @@ class InvalidOperation(EvaluatorError):
 
 
 class InvalidNode(InvalidOperation):
+    pass
+
+
+class InvalidConstant(InvalidOperation):
     pass
 
 

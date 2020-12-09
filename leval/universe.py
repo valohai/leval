@@ -42,7 +42,7 @@ class EvaluationUniverse:
     def evaluate_binary_op(self, op: ast.AST, left: Any, right: Any) -> Any:
         bin_op = self.ops.get(type(op))
         if not bin_op:
-            raise InvalidOperation(f"Binary operator {op} is not allowed")
+            raise InvalidOperation(f"Binary operator {op} is not allowed", node=op)
         return bin_op(left, right)
 
     def evaluate_compare_op(self, op: ast.AST, left: Any, right: Any) -> bool:
@@ -57,4 +57,4 @@ class EvaluationUniverse:
             return all(g() for g in value_getters)
         if isinstance(op, ast.Or):
             return any(g() for g in value_getters)
-        raise InvalidOperation(f"Boolean operator {op} is not allowed")
+        raise InvalidOperation(f"Boolean operator {op} is not allowed", node=op)

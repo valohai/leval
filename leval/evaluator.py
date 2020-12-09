@@ -1,7 +1,7 @@
 import ast
 from functools import partial
 
-from .excs import TooComplex, InvalidNode, InvalidOperation
+from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant
 from .universe import EvaluationUniverse
 
 
@@ -18,12 +18,12 @@ class Evaluator(ast.NodeTransformer):
 
     def visit(self, node):
         if self.depth >= self.max_depth:
-            raise TooComplex(f"Expression is too complex")
+            raise TooComplex(f"Expression is too complex", node=node)
         node_name = node.__class__.__name__
         method = f"visit_{node_name}"
         visitor = getattr(self, method, None)
         if not visitor:
-            raise InvalidNode(f"Operation {node_name} is not allowed")
+            raise InvalidNode(f"Operation {node_name} is not allowed", node=node)
         try:
             self.depth += 1
             return visitor(node)
@@ -32,7 +32,7 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Compare(self, node):
         if len(node.ops) != 1:
-            raise InvalidOperation("Only simple comparisons are supported")
+            raise InvalidOperation("Only simple comparisons are supported", node=node)
         left = self.visit(node.left)
         right = self.visit(node.comparators[0])
         op = node.ops[0]
@@ -40,9 +40,9 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Call(self, node):
         if not isinstance(node.func, ast.Name):
-            raise InvalidOperation(f"Invalid call to func {node.func}")
+            raise InvalidOperation(f"Invalid call to func {node.func}", node=node)
         if node.keywords:
-            raise InvalidOperation("Kwarg calls are not allowed")
+            raise InvalidOperation("Kwarg calls are not allowed", node=node)
         arg_getters = [partial(self.visit, arg) for arg in node.args]
         return self.universe.evaluate_function(node.func.id, arg_getters)
 
@@ -55,11 +55,13 @@ class Evaluator(ast.NodeTransformer):
     def visit_Constant(self, node):  # Python 3.8+
         if isinstance(node.value, self.allowed_constant_classes):
             return node.value
-        raise InvalidOperation(f"Invalid constant {node} ({type(node.value)})")
+        raise InvalidConstant(
+            f"Invalid constant {node} ({type(node.value)})", node=node
+        )
 
     def visit_Name(self, node):
         if not isinstance(node.ctx, ast.Load):
-            raise InvalidOperation(f"Invalid name operation")
+            raise InvalidOperation(f"Invalid name operation", node=node)
         return self.universe.get_value(node.id)
 
     def visit_Attribute(self, node):
@@ -75,10 +77,12 @@ class Evaluator(ast.NodeTransformer):
             elif isinstance(kid, ast.Name):
                 attr_bits.append(kid.id)
             else:
-                raise InvalidOperation(f"Unsupported attribute structure in {node}")
+                raise InvalidOperation(
+                    f"Unsupported attribute structure in {node}", node=node
+                )
 
         walk_attr(node)
-        name = tuple(attr_bits[::-1])
+        name = tuple(str(bit) for bit in attr_bits[::-1])
         return self.universe.get_value(name)
 
     def visit_BinOp(self, node):
@@ -98,7 +102,7 @@ class Evaluator(ast.NodeTransformer):
             return -operand
         if isinstance(node.op, ast.Not):
             return not operand
-        raise InvalidOperation(f"invalid unary op: {node.op}")
+        raise InvalidOperation(f"invalid unary op: {node.op}", node=node)
 
     def visit_Set(self, node):
         return set(self.visit(n) for n in node.elts)
