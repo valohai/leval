@@ -11,13 +11,19 @@ class Evaluator(ast.NodeTransformer):
     max_depth = 10
 
     def __init__(self, universe: EvaluationUniverse):
+        """
+        Initialize an evaluator with access to the given evaluation universe.
+        """
         self.depth = 0
         self.universe = universe
 
-    def evaluate_expression(self, expression):
+    def evaluate_expression(self, expression: str):
+        """
+        Evaluate the given expression and return the ultimate result.
+        """
         return self.visit(ast.parse(expression, "<expression>", "eval"))
 
-    def visit(self, node):
+    def visit(self, node):  # noqa: D102
         if self.depth >= self.max_depth:
             raise TooComplex("Expression is too complex", node=node)
         node_name = node.__class__.__name__
@@ -31,7 +37,7 @@ class Evaluator(ast.NodeTransformer):
         finally:
             self.depth -= 1
 
-    def visit_Compare(self, node):
+    def visit_Compare(self, node):  # noqa: D102
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
         left = self.visit(node.left)
@@ -39,7 +45,7 @@ class Evaluator(ast.NodeTransformer):
         op = node.ops[0]
         return self.universe.evaluate_binary_op(op, left, right)
 
-    def visit_Call(self, node):
+    def visit_Call(self, node):  # noqa: D102
         if not isinstance(node.func, ast.Name):
             raise InvalidOperation(f"Invalid call to func {node.func}", node=node)
         if node.keywords:
@@ -64,7 +70,7 @@ class Evaluator(ast.NodeTransformer):
     visit_Str = _visit_constantlike  # Python 3.7 and lower
     visit_Num = _visit_constantlike  # Python 3.7 and lower
 
-    def visit_Name(self, node):
+    def visit_Name(self, node):  # noqa: D102
         if not isinstance(node.ctx, ast.Load):
             raise InvalidOperation("Invalid name operation", node=node)
         return self.universe.get_value(node.id)
@@ -73,16 +79,16 @@ class Evaluator(ast.NodeTransformer):
         name = expand_name(node)  # Convert node into a tuple of identifiers first.
         return self.universe.get_value(name)
 
-    def visit_BinOp(self, node):
+    def visit_BinOp(self, node):  # noqa: D102
         left = self.visit(node.left)
         right = self.visit(node.right)
         return self.universe.evaluate_binary_op(node.op, left, right)
 
-    def visit_BoolOp(self, node):
+    def visit_BoolOp(self, node):  # noqa: D102
         value_getters = [partial(self.visit, v_node) for v_node in node.values]
         return self.universe.evaluate_bool_op(node.op, value_getters)
 
-    def visit_UnaryOp(self, node):
+    def visit_UnaryOp(self, node):  # noqa: D102
         operand = self.visit(node.operand)
         if isinstance(node.op, ast.UAdd):
             return +operand
@@ -94,11 +100,11 @@ class Evaluator(ast.NodeTransformer):
             f"invalid unary op: {node.op}", node=node
         )
 
-    def visit_Set(self, node):
+    def visit_Set(self, node):  # noqa: D102
         return set(self.visit(n) for n in node.elts)
 
-    def visit_Tuple(self, node):
+    def visit_Tuple(self, node):  # noqa: D102
         return tuple(self.visit(n) for n in node.elts)
 
-    def visit_Expression(self, node):
+    def visit_Expression(self, node):  # noqa: D102
         return self.visit(node.body)

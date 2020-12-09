@@ -7,9 +7,11 @@ with open("./leval/__init__.py", "r") as infp:
 
 dev_dependencies = [
     "black==20.8b1",
+    "flake8-black==0.2.1",
+    "flake8-bugbear==20.11.1",
+    "flake8-docstrings==1.5.0",
     "flake8==3.8.4",
     "isort==5.6.4",
-    "pydocstyle==2.6.0",
     "pytest-cov==2.10.1",
     "pytest==6.1.2",
 ]

@@ -27,20 +27,25 @@ class EvaluationUniverse:
 
     def get_value(self, name: Union[str, Tuple[str]]) -> Any:
         """
-        Get the value for a given name (either a string or a tuple,
-        if the original identifier had been a dotted name).
+        Get the value for a given name.
+
+        The value is a tuple if the original identifier had been a dotted name.
+        Otherwise it is a string.
         """
         raise NoSuchValue(f"No value {name}")  # pragma: no cover
 
     def evaluate_function(self, name: str, arg_getters: List[Callable[[], Any]]) -> Any:
         """
         Evaluate a function with the given arguments.
+
         Invoke the functions in `arg_getters` to acquire
         the true values of the arguments.
         """
         raise NoSuchFunction(f"No function {name}")  # pragma: no cover
 
-    def evaluate_binary_op(self, op: ast.AST, left: Any, right: Any) -> Any:
+    def evaluate_binary_op(  # noqa: D102
+        self, op: ast.AST, left: Any, right: Any
+    ) -> Any:
         bin_op = self.ops.get(type(op))
         if not bin_op:
             raise InvalidOperation(  # pragma: no cover
@@ -50,7 +55,8 @@ class EvaluationUniverse:
 
     def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
         """
-        Evaluate a function with the given arguments.
+        Evaluate a boolean operation with the given arguments.
+
         Invoke the functions in `value_getters` to acquire
         the true values of the values being compared.
         """
