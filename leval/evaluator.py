@@ -46,18 +46,22 @@ class Evaluator(ast.NodeTransformer):
         arg_getters = [partial(self.visit, arg) for arg in node.args]
         return self.universe.evaluate_function(node.func.id, arg_getters)
 
-    def visit_Num(self, node):
-        return node.n
+    def _visit_constantlike(self, node):
+        if isinstance(node, ast.Num):
+            value = node.n
+        elif isinstance(node, ast.Str):
+            value = node.s
+        else:
+            value = node.value
 
-    def visit_Str(self, node):
-        return node.s
+        if isinstance(value, self.allowed_constant_classes):
+            return value
 
-    def visit_Constant(self, node):  # Python 3.8+
-        if isinstance(node.value, self.allowed_constant_classes):
-            return node.value
-        raise InvalidConstant(
-            f"Invalid constant {node} ({type(node.value)})", node=node
-        )
+        raise InvalidConstant(f"Invalid constant {node} ({type(value)})", node=node)
+
+    visit_Constant = _visit_constantlike  # Python 3.8 and newer
+    visit_Str = _visit_constantlike  # Python 3.7 and lower
+    visit_Num = _visit_constantlike  # Python 3.7 and lower
 
     def visit_Name(self, node):
         if not isinstance(node.ctx, ast.Load):
@@ -102,7 +106,9 @@ class Evaluator(ast.NodeTransformer):
             return -operand
         if isinstance(node.op, ast.Not):
             return not operand
-        raise InvalidOperation(f"invalid unary op: {node.op}", node=node)
+        raise InvalidOperation(  # pragma: no cover
+            f"invalid unary op: {node.op}", node=node
+        )
 
     def visit_Set(self, node):
         return set(self.visit(n) for n in node.elts)

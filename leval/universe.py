@@ -30,23 +30,22 @@ class EvaluationUniverse:
         Get the value for a given name (either a string or a tuple,
         if the original identifier had been a dotted name).
         """
-        raise NoSuchValue(f"No value {name}")
+        raise NoSuchValue(f"No value {name}")  # pragma: no cover
 
     def evaluate_function(self, name: str, arg_getters: List[Callable[[], Any]]) -> Any:
         """
         Evaluate a function with the given arguments.
         Invoke the functions in `arg_getters` to acquire the true values of the arguments.
         """
-        raise NoSuchFunction(f"No function {name}")
+        raise NoSuchFunction(f"No function {name}")  # pragma: no cover
 
     def evaluate_binary_op(self, op: ast.AST, left: Any, right: Any) -> Any:
         bin_op = self.ops.get(type(op))
         if not bin_op:
-            raise InvalidOperation(f"Binary operator {op} is not allowed", node=op)
+            raise InvalidOperation(  # pragma: no cover
+                f"Binary operator {op} is not allowed", node=op
+            )
         return bin_op(left, right)
-
-    def evaluate_compare_op(self, op: ast.AST, left: Any, right: Any) -> bool:
-        return bool(self.evaluate_binary_op(op, left, right))
 
     def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
         """
@@ -57,4 +56,6 @@ class EvaluationUniverse:
             return all(g() for g in value_getters)
         if isinstance(op, ast.Or):
             return any(g() for g in value_getters)
-        raise InvalidOperation(f"Boolean operator {op} is not allowed", node=op)
+        raise InvalidOperation(  # pragma: no cover
+            f"Boolean operator {op} is not allowed", node=op
+        )
