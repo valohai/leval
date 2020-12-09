@@ -3,6 +3,7 @@ from functools import partial
 
 from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant
 from .universe import EvaluationUniverse
+from .utils import expand_name
 
 
 class Evaluator(ast.NodeTransformer):
@@ -68,26 +69,8 @@ class Evaluator(ast.NodeTransformer):
             raise InvalidOperation("Invalid name operation", node=node)
         return self.universe.get_value(node.id)
 
-    def visit_Attribute(self, node):
-        """
-        Turns Attributes into tuples of identifiers,
-        e.g. `foo.bar.quux` -> `('foo', 'bar', 'quux')`
-        """
-        attr_bits = []
-
-        def walk_attr(kid):
-            if isinstance(kid, ast.Attribute):
-                attr_bits.append(kid.attr)
-                walk_attr(kid.value)
-            elif isinstance(kid, ast.Name):
-                attr_bits.append(kid.id)
-            else:
-                raise InvalidOperation(
-                    f"Unsupported attribute structure in {node}", node=node
-                )
-
-        walk_attr(node)
-        name = tuple(str(bit) for bit in attr_bits[::-1])
+    def visit_Attribute(self, node):  # noqa: D102
+        name = expand_name(node)  # Convert node into a tuple of identifiers first.
         return self.universe.get_value(name)
 
     def visit_BinOp(self, node):
