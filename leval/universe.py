@@ -35,7 +35,8 @@ class EvaluationUniverse:
     def evaluate_function(self, name: str, arg_getters: List[Callable[[], Any]]) -> Any:
         """
         Evaluate a function with the given arguments.
-        Invoke the functions in `arg_getters` to acquire the true values of the arguments.
+        Invoke the functions in `arg_getters` to acquire
+        the true values of the arguments.
         """
         raise NoSuchFunction(f"No function {name}")  # pragma: no cover
 
@@ -50,7 +51,8 @@ class EvaluationUniverse:
     def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
         """
         Evaluate a function with the given arguments.
-        Invoke the functions in `value_getters` to acquire the true values of the values being compared.
+        Invoke the functions in `value_getters` to acquire
+        the true values of the values being compared.
         """
         if isinstance(op, ast.And):
             return all(g() for g in value_getters)

@@ -18,7 +18,7 @@ class Evaluator(ast.NodeTransformer):
 
     def visit(self, node):
         if self.depth >= self.max_depth:
-            raise TooComplex(f"Expression is too complex", node=node)
+            raise TooComplex("Expression is too complex", node=node)
         node_name = node.__class__.__name__
         method = f"visit_{node_name}"
         visitor = getattr(self, method, None)
@@ -65,12 +65,13 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Name(self, node):
         if not isinstance(node.ctx, ast.Load):
-            raise InvalidOperation(f"Invalid name operation", node=node)
+            raise InvalidOperation("Invalid name operation", node=node)
         return self.universe.get_value(node.id)
 
     def visit_Attribute(self, node):
         """
-        Turns Attributes into tuples of identifiers, e.g. `foo.bar.quux` -> `('foo', 'bar', 'quux')`
+        Turns Attributes into tuples of identifiers,
+        e.g. `foo.bar.quux` -> `('foo', 'bar', 'quux')`
         """
         attr_bits = []
 
