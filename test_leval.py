@@ -2,6 +2,7 @@ from types import SimpleNamespace
 
 import pytest
 
+from leval.evaluator import Evaluator
 from leval.excs import (
     InvalidOperation,
     NoSuchFunction,
@@ -10,6 +11,10 @@ from leval.excs import (
     TooComplex,
 )
 from leval.simple import simple_eval
+from leval.universe.weakly_typed import (
+    WeaklyTypedEvaluationUniverse,
+    WeaklyTypedSimpleUniverse,
+)
 
 values = {
     "foo": 7,
@@ -108,3 +113,18 @@ def test_verify(kind, description, case, expected):
             fn()
     else:
         assert fn()
+
+
+def test_weak_typing():
+    def weak_eval(s):
+        uni = WeaklyTypedSimpleUniverse(values={"s": "8", "f": 8}, functions={})
+        return Evaluator(uni).evaluate_expression(s)
+
+    assert weak_eval("s + s + s") == "888"
+    assert weak_eval("s + s + s + 10") == 898
+    assert weak_eval("s + f") == 16
+    assert weak_eval("f + s") == 16
+    with pytest.raises(InvalidOperands):
+        weak_eval("s * 8")
+    with pytest.raises(InvalidOperands):
+        weak_eval("8 * s")
