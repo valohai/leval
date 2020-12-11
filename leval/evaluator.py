@@ -1,5 +1,6 @@
 import ast
 from functools import partial
+from typing import Optional
 
 from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant
 from .universe.base import BaseEvaluationUniverse
@@ -10,12 +11,15 @@ class Evaluator(ast.NodeTransformer):
     allowed_constant_classes = (str, int, float, complex)
     max_depth = 10
 
-    def __init__(self, universe: BaseEvaluationUniverse):
+    def __init__(
+        self, universe: BaseEvaluationUniverse, *, max_depth: Optional[int] = None
+    ):
         """
         Initialize an evaluator with access to the given evaluation universe.
         """
         self.depth = 0
         self.universe = universe
+        self.max_depth = max_depth if max_depth is not None else self.max_depth
 
     def evaluate_expression(self, expression: str):
         """
