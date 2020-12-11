@@ -28,6 +28,5 @@ def simple_eval(
         universe = VerifierUniverse()
     else:
         universe = SimpleUniverse(functions=(functions or {}), values=(values or {}))
-    se = Evaluator(universe)
-    se.max_depth = max_depth
+    se = Evaluator(universe, max_depth=max_depth)
     return se.evaluate_expression(expression)
