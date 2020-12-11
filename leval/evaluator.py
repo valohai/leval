@@ -25,7 +25,10 @@ class Evaluator(ast.NodeTransformer):
 
     def visit(self, node):  # noqa: D102
         if self.depth >= self.max_depth:
-            raise TooComplex("Expression is too complex", node=node)
+            raise TooComplex(
+                f"Expression is too complex ({self.depth} >= {self.max_depth})",
+                node=node,
+            )
         node_name = node.__class__.__name__
         method = f"visit_{node_name}"
         visitor = getattr(self, method, None)
