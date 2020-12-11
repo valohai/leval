@@ -63,7 +63,7 @@ error_cases = [
     ("List comprehensions are not allowed", "[a for b in c]", InvalidOperation),
     ("Set comprehensions are not allowed", "{a for b in c}", InvalidOperation),
     ("Dict comprehensions are not allowed", "{a: a for b in c}", InvalidOperation),
-    ("Formatting strings is not allowed", "f'foo'", InvalidOperation),
+    ("Formatting strings is not allowed", "f'foo'", (SyntaxError, InvalidOperation)),
     ("Constructing dicts is not allowed", "{'d': 8}", InvalidOperation),
     ("Constructing lists is not allowed", "[1, 2, 3]", InvalidOperation),
     (

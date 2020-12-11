@@ -36,7 +36,7 @@ def weakly_typed_operation(func, coerce=float, check=None):
 
 def guard_no_string_mul(args):
     if any(isinstance(a, str) for a in args):
-        raise InvalidOperands(f"can't multiply strings")
+        raise InvalidOperands("can't multiply strings")
 
 
 class WeaklyTypedEvaluationUniverse(EvaluationUniverse):

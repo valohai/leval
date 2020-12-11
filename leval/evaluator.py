@@ -18,7 +18,7 @@ class Evaluator(ast.NodeTransformer):
         universe: BaseEvaluationUniverse,
         *,
         max_depth: Optional[int] = None,
-        max_time: Optional[float] = None,
+        max_time: Optional[float] = None
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
@@ -40,21 +40,25 @@ class Evaluator(ast.NodeTransformer):
     def visit(self, node):  # noqa: D102
         if self.depth >= self.max_depth:
             raise TooComplex(
-                f"Expression is too complex ({self.depth} >= {self.max_depth})",
+                "Expression is too complex ({} > {})".format(
+                    self.depth, self.max_depth
+                ),
                 node=node,
             )
         if self.max_time > 0:
             elapsed_time = time.time() - self.start_time
             if elapsed_time > self.max_time:
                 raise Timeout(
-                    f"Expression reached time limit {self.max_time}",
+                    "Expression reached time limit {}".format(self.max_time),
                     node=node,
                 )
         node_name = node.__class__.__name__
-        method = f"visit_{node_name}"
+        method = "visit_{}".format(node_name)
         visitor = getattr(self, method, None)
         if not visitor:
-            raise InvalidNode(f"Operation {node_name} is not allowed", node=node)
+            raise InvalidNode(
+                "Operation {} is not allowed".format(node_name), node=node
+            )
         try:
             self.depth += 1
             return visitor(node)
@@ -71,7 +75,9 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Call(self, node):  # noqa: D102
         if not isinstance(node.func, ast.Name):
-            raise InvalidOperation(f"Invalid call to func {node.func}", node=node)
+            raise InvalidOperation(
+                "Invalid call to func {}".format(node.func), node=node
+            )
         if node.keywords:
             raise InvalidOperation("Kwarg calls are not allowed", node=node)
         arg_getters = [partial(self.visit, arg) for arg in node.args]
@@ -88,7 +94,10 @@ class Evaluator(ast.NodeTransformer):
         if isinstance(value, self.allowed_constant_classes):
             return value
 
-        raise InvalidConstant(f"Invalid constant {node} ({type(value)})", node=node)
+        raise InvalidConstant(
+            "Invalid constant {node} ({type})".format(node=node, type=type(value)),
+            node=node,
+        )
 
     visit_Constant = _visit_constantlike  # Python 3.8 and newer
     visit_Str = _visit_constantlike  # Python 3.7 and lower
@@ -121,7 +130,7 @@ class Evaluator(ast.NodeTransformer):
         if isinstance(node.op, ast.Not):
             return not operand
         raise InvalidOperation(  # pragma: no cover
-            f"invalid unary op: {node.op}", node=node
+            "invalid unary op: {}".format(node.op), node=node
         )
 
     def visit_Set(self, node):  # noqa: D102
