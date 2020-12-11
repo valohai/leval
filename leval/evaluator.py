@@ -1,8 +1,9 @@
 import ast
+import time
 from functools import partial
 from typing import Optional
 
-from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant
+from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant, Timeout
 from .universe.base import BaseEvaluationUniverse
 from .utils import expand_name
 
@@ -10,21 +11,30 @@ from .utils import expand_name
 class Evaluator(ast.NodeTransformer):
     allowed_constant_classes = (str, int, float, complex)
     max_depth = 10
+    max_time = None
 
     def __init__(
-        self, universe: BaseEvaluationUniverse, *, max_depth: Optional[int] = None
+        self,
+        universe: BaseEvaluationUniverse,
+        *,
+        max_depth: Optional[int] = None,
+        max_time: Optional[float] = None,
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
         """
-        self.depth = 0
+        self.depth = None
+        self.start_time = None
         self.universe = universe
         self.max_depth = max_depth if max_depth is not None else self.max_depth
+        self.max_time = float(max_time or 0)
 
     def evaluate_expression(self, expression: str):
         """
         Evaluate the given expression and return the ultimate result.
         """
+        self.depth = 0
+        self.start_time = time.time()
         return self.visit(ast.parse(expression, "<expression>", "eval"))
 
     def visit(self, node):  # noqa: D102
@@ -33,6 +43,13 @@ class Evaluator(ast.NodeTransformer):
                 f"Expression is too complex ({self.depth} >= {self.max_depth})",
                 node=node,
             )
+        if self.max_time > 0:
+            elapsed_time = time.time() - self.start_time
+            if elapsed_time > self.max_time:
+                raise Timeout(
+                    f"Expression reached time limit {self.max_time}",
+                    node=node,
+                )
         node_name = node.__class__.__name__
         method = f"visit_{node_name}"
         visitor = getattr(self, method, None)

@@ -1,3 +1,4 @@
+import time
 from types import SimpleNamespace
 
 import pytest
@@ -9,6 +10,7 @@ from leval.excs import (
     NoSuchValue,
     InvalidOperands,
     TooComplex,
+    Timeout,
 )
 from leval.simple import simple_eval
 from leval.universe.weakly_typed import (
@@ -128,3 +130,19 @@ def test_weak_typing():
         weak_eval("s * 8")
     with pytest.raises(InvalidOperands):
         weak_eval("8 * s")
+
+
+def test_time_limit():
+    def slow(x=None):
+        time.sleep(0.2)
+        return x or 1
+
+    with pytest.raises(Timeout):
+        simple_eval(
+            "min(slow(3), slow(.1)) + slow(.5)",
+            functions={
+                "slow": slow,
+                "min": min,
+            },
+            max_time=0.3,
+        )

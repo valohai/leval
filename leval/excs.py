@@ -36,3 +36,7 @@ class NoSuchFunction(NameError, EvaluatorError):
 
 class TooComplex(EvaluatorError):
     pass
+
+
+class Timeout(EvaluatorError, TimeoutError):
+    pass

@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Union, Any
+from typing import Dict, Callable, Union, Any, Optional
 
 from .evaluator import Evaluator
 from .universe.simple import SimpleUniverse
@@ -11,6 +11,7 @@ def simple_eval(
     functions: Dict[str, Callable] = None,
     values: Dict[Union[str, tuple], Any] = None,
     max_depth=10,
+    max_time: Optional[float] = None,
     verify_only: bool = False,
 ):
     """
@@ -20,6 +21,7 @@ def simple_eval(
     :param functions: Mapping of function names to functions.
     :param values: Mapping of value names to values.
     :param max_depth: Maximum expression depth (in terms of Python AST nodes).
+    :param max_time: Maximum evaluation time in seconds.
     :param verify_only: Only verify the expression in terms of allowed
 
     :return: The result of the evaluation.
@@ -28,5 +30,5 @@ def simple_eval(
         universe = VerifierUniverse()
     else:
         universe = SimpleUniverse(functions=(functions or {}), values=(values or {}))
-    se = Evaluator(universe, max_depth=max_depth)
+    se = Evaluator(universe, max_depth=max_depth, max_time=max_time)
     return se.evaluate_expression(expression)
