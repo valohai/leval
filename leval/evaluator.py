@@ -2,7 +2,7 @@ import ast
 from functools import partial
 
 from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant
-from .universe import EvaluationUniverse
+from .universe.base import BaseEvaluationUniverse
 from .utils import expand_name
 
 
@@ -10,7 +10,7 @@ class Evaluator(ast.NodeTransformer):
     allowed_constant_classes = (str, int, float, complex)
     max_depth = 10
 
-    def __init__(self, universe: EvaluationUniverse):
+    def __init__(self, universe: BaseEvaluationUniverse):
         """
         Initialize an evaluator with access to the given evaluation universe.
         """
