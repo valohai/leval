@@ -86,3 +86,25 @@ def test_success(description, case, expected):
 def test_error(description, case, expected):
     with pytest.raises(expected):
         simple_eval(case, values=values, functions=functions, max_depth=5)
+
+
+@pytest.mark.parametrize(
+    "kind, description, case, expected",
+    (
+        [("good",) + case for case in success_cases]
+        + [
+            ("bad",) + case
+            for case in error_cases
+            if case[-1] not in (InvalidOperands, NoSuchValue, NoSuchFunction)
+        ]
+    ),
+)
+def test_verify(kind, description, case, expected):
+    fn = lambda: simple_eval(
+        case, values=values, functions=functions, max_depth=6, verify_only=True
+    )
+    if kind == "bad":
+        with pytest.raises(expected):
+            fn()
+    else:
+        assert fn()
