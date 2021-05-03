@@ -23,5 +23,8 @@ jobs:
     - name: Test with pytest
       run: pytest -v --cov .
     - name: Lint with flake8
-      run: flake8 leval --count --exit-zero --statistics
+      run: flake8 leval --count --statistics
+      if: ${{ matrix['python-version'] != '3.5' }}
+    - name: Typecheck with mypy
+      run: mypy leval
       if: ${{ matrix['python-version'] != '3.5' }}

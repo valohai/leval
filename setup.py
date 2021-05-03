@@ -12,6 +12,7 @@ dev_dependencies = [
     "flake8-docstrings==1.5.0;python_version>='3.6'",
     "flake8==3.8.4;python_version>='3.6'",
     "isort==5.6.4;python_version>='3.6'",
+    "mypy>=0.812;python_version>='3.6'",
     "pytest-cov==2.10.1",
     "pytest==6.1.2",
 ]
@@ -27,6 +28,7 @@ if __name__ == "__main__":
         maintainer="Aarni Koskela",
         maintainer_email="akx@iki.fi",
         license="MIT",
+        include_package_data=True,
         install_requires=[],
         tests_require=dev_dependencies,
         extras_require={"dev": dev_dependencies},
