@@ -58,7 +58,9 @@ class EvaluationUniverse(BaseEvaluationUniverse):
             )
         return bin_op(left, right)
 
-    def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
+    def evaluate_bool_op(
+        self, op: ast.AST, value_getters: List[Callable[[], Any]]
+    ):  # noqa: D102
         if isinstance(op, ast.And):
             return all(g() for g in value_getters)
         if isinstance(op, ast.Or):
