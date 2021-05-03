@@ -1,7 +1,7 @@
 import ast
 import time
 from functools import partial
-from typing import Optional
+from typing import Any, Optional
 
 from .excs import InvalidConstant, InvalidNode, InvalidOperation, Timeout, TooComplex
 from .universe.base import BaseEvaluationUniverse
@@ -23,13 +23,13 @@ class Evaluator(ast.NodeTransformer):
         """
         Initialize an evaluator with access to the given evaluation universe.
         """
-        self.depth = None
-        self.start_time = None
+        self.depth = None  # type: Optional[int]
+        self.start_time = None  # type: Optional[float]
         self.universe = universe
         self.max_depth = max_depth if max_depth is not None else self.max_depth
         self.max_time = float(max_time or 0)
 
-    def evaluate_expression(self, expression: str):
+    def evaluate_expression(self, expression: str) -> Any:
         """
         Evaluate the given expression and return the ultimate result.
         """

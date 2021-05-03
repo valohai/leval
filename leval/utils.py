@@ -4,7 +4,7 @@ from typing import Tuple
 from .excs import InvalidOperation
 
 
-def expand_name(node: ast.Attribute) -> Tuple[str]:
+def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
     """
     Turn an Attribute node into a tuple of identifier strings.
 

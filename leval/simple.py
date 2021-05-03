@@ -27,7 +27,7 @@ def simple_eval(
     :return: The result of the evaluation.
     """
     if verify_only:
-        universe = VerifierUniverse()
+        universe = VerifierUniverse()  # type: Union[VerifierUniverse, SimpleUniverse]
     else:
         universe = SimpleUniverse(functions=(functions or {}), values=(values or {}))
     se = Evaluator(universe, max_depth=max_depth, max_time=max_time)
