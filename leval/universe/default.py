@@ -2,10 +2,10 @@ import ast
 import functools
 import operator
 from numbers import Number
-from typing import Any, List, Callable
+from typing import Any, Callable, List
 
+from ..excs import InvalidOperands, InvalidOperation
 from .base import BaseEvaluationUniverse
-from ..excs import InvalidOperation, InvalidOperands
 
 
 def numbers_only_binop(name, func):

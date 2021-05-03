@@ -1,4 +1,4 @@
-from typing import Dict, Callable, Union, Any, Optional
+from typing import Any, Callable, Dict, Optional, Union
 
 from .evaluator import Evaluator
 from .universe.simple import SimpleUniverse

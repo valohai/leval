@@ -1,6 +1,6 @@
-from typing import Dict, Callable, Union, Any
+from typing import Any, Callable, Dict, Union
 
-from ..excs import NoSuchValue, NoSuchFunction
+from ..excs import NoSuchFunction, NoSuchValue
 from .default import EvaluationUniverse
 
 

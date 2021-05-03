@@ -3,7 +3,7 @@ import time
 from functools import partial
 from typing import Optional
 
-from .excs import TooComplex, InvalidNode, InvalidOperation, InvalidConstant, Timeout
+from .excs import InvalidConstant, InvalidNode, InvalidOperation, Timeout, TooComplex
 from .universe.base import BaseEvaluationUniverse
 from .utils import expand_name
 
