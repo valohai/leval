@@ -1,7 +1,7 @@
 import ast
-from typing import Union, Tuple, Any, List, Callable
+from typing import Any, Callable, List, Tuple, Union
 
-from ..excs import NoSuchValue, NoSuchFunction, InvalidOperation
+from ..excs import InvalidOperation, NoSuchFunction, NoSuchValue
 
 
 class BaseEvaluationUniverse:

@@ -2,10 +2,10 @@ import ast
 import functools
 import operator
 from numbers import Number
-from typing import Any, List, Callable
+from typing import Any, Callable, List
 
+from ..excs import InvalidOperands, InvalidOperation
 from .base import BaseEvaluationUniverse
-from ..excs import InvalidOperation, InvalidOperands
 
 
 def numbers_only_binop(name, func):
@@ -58,7 +58,9 @@ class EvaluationUniverse(BaseEvaluationUniverse):
             )
         return bin_op(left, right)
 
-    def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
+    def evaluate_bool_op(
+        self, op: ast.AST, value_getters: List[Callable[[], Any]]
+    ):  # noqa: D102
         if isinstance(op, ast.And):
             return all(g() for g in value_getters)
         if isinstance(op, ast.Or):

@@ -2,15 +2,17 @@ import ast
 import functools
 import operator
 
+from ..excs import InvalidOperands
 from .default import EvaluationUniverse
 from .simple import SimpleUniverse
-from ..excs import InvalidOperands
 
 
 def weakly_typed_operation(func, coerce=float, check=None):
     """
-    Make the wrapped function "weakly typed"; it first attempts to use the arguments
-    as is for the function, and failing that, coerces them using the given function first.
+    Make the wrapped function "weakly typed".
+
+    It first attempts to use the arguments as is for the function,
+    and failing that, coerces them using the given function first.
 
     The optional check function is run before each invocation of func.
     """
@@ -34,7 +36,7 @@ def weakly_typed_operation(func, coerce=float, check=None):
     return op
 
 
-def guard_no_string_mul(args):
+def guard_no_string_mul(args):  # noqa: D103
     if any(isinstance(a, str) for a in args):
         raise InvalidOperands("can't multiply strings")
 
