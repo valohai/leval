@@ -4,7 +4,7 @@ from .default import EvaluationUniverse
 
 class VerifierUniverse(EvaluationUniverse):
     """
-    An universe that attempts to have the evaluator walk as much of the tree as possible, but does no computation.
+    An universe that does no computation but walks as much of the tree as possible.
     """
 
     def get_value(self, name):  # noqa: D102

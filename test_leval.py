@@ -5,18 +5,15 @@ import pytest
 
 from leval.evaluator import Evaluator
 from leval.excs import (
+    InvalidOperands,
     InvalidOperation,
     NoSuchFunction,
     NoSuchValue,
-    InvalidOperands,
-    TooComplex,
     Timeout,
+    TooComplex,
 )
 from leval.simple import simple_eval
-from leval.universe.weakly_typed import (
-    WeaklyTypedEvaluationUniverse,
-    WeaklyTypedSimpleUniverse,
-)
+from leval.universe.weakly_typed import WeaklyTypedSimpleUniverse
 
 values = {
     "foo": 7,
@@ -107,7 +104,7 @@ def test_error(description, case, expected):
     ),
 )
 def test_verify(kind, description, case, expected):
-    fn = lambda: simple_eval(
+    fn = lambda: simple_eval(  # noqa: E731
         case, values=values, functions=functions, max_depth=6, verify_only=True
     )
     if kind == "bad":

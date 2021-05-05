@@ -17,7 +17,8 @@ def numbers_only_binop(name, func):
     def binop(a, b):
         if not (isinstance(a, Number) and isinstance(b, Number)):
             raise InvalidOperands(
-                'operator "{name}" can only be used with numbers, not {a!r} and {b!r}'.format(
+                'operator "{name}" can only be used with numbers, '
+                "not {a!r} and {b!r}".format(
                     name=name,
                     a=a,
                     b=b,
