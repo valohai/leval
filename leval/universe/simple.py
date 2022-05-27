@@ -25,10 +25,10 @@ class SimpleUniverse(EvaluationUniverse):
         try:
             return self.values[name]
         except KeyError:
-            raise NoSuchValue("No value {}".format(name))
+            raise NoSuchValue(f"No value {name}")
 
     def evaluate_function(self, name, arg_getters):  # noqa: D102
         func = self.functions.get(name)
         if not func:
-            raise NoSuchFunction("No function {}".format(name))
+            raise NoSuchFunction(f"No function {name}")
         return func(*[getter() for getter in arg_getters])

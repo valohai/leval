@@ -17,12 +17,7 @@ def numbers_only_binop(name, func):
     def binop(a, b):
         if not (isinstance(a, Number) and isinstance(b, Number)):
             raise InvalidOperands(
-                'operator "{name}" can only be used with numbers, '
-                "not {a!r} and {b!r}".format(
-                    name=name,
-                    a=a,
-                    b=b,
-                )
+                f'operator "{name}" can only be used with numbers, not {a!r} and {b!r}'
             )
         return func(a, b)
 
@@ -55,7 +50,7 @@ class EvaluationUniverse(BaseEvaluationUniverse):
         bin_op = self.ops.get(type(op))
         if not bin_op:
             raise InvalidOperation(  # pragma: no cover
-                "Binary operator {} is not allowed".format(op), node=op
+                f"Binary operator {op} is not allowed", node=op
             )
         return bin_op(left, right)
 
@@ -67,5 +62,5 @@ class EvaluationUniverse(BaseEvaluationUniverse):
         if isinstance(op, ast.Or):
             return any(g() for g in value_getters)
         raise InvalidOperation(  # pragma: no cover
-            "Boolean operator {} is not allowed".format(op), node=op
+            f"Boolean operator {op} is not allowed", node=op
         )
