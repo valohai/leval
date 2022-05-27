@@ -13,6 +13,7 @@ from leval.excs import (
     TooComplex,
 )
 from leval.simple import simple_eval
+from leval.universe.default import EvaluationUniverse
 from leval.universe.weakly_typed import WeaklyTypedSimpleUniverse
 
 values = {
@@ -143,3 +144,11 @@ def test_time_limit():
             },
             max_time=0.3,
         )
+
+
+def test_allowed_container_types():
+    # Disallow all container types:
+    evaluator = Evaluator(EvaluationUniverse(), allowed_container_types=[])
+    for expr in ("[1, 2, 3]", "{1, 2, 3}", "(1, 2, 3)"):
+        with pytest.raises(InvalidOperation):
+            evaluator.evaluate_expression(expr)
