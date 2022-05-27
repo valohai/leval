@@ -71,6 +71,12 @@ error_cases = [
     ),
     ("Can't access weird methods off valid names", "abs.__class__", NoSuchValue),
     ("Arbitrary Python code is not allowed", "if x > a:\n    hello()", SyntaxError),
+    ("Can't access attributes off constants", "(3).__class__", InvalidOperation),
+    (
+        "Walruses aren't allowed",
+        "(a := 3) + 8",
+        (SyntaxError, InvalidOperation),  # Error depends on Python version
+    ),
 ]
 
 
