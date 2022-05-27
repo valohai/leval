@@ -152,3 +152,10 @@ def test_allowed_container_types():
     for expr in ("[1, 2, 3]", "{1, 2, 3}", "(1, 2, 3)"):
         with pytest.raises(InvalidOperation):
             evaluator.evaluate_expression(expr)
+
+
+def test_readme_example():
+    assert simple_eval("1 + 2") == 3
+    assert simple_eval("x < -80 or x > 125 or x == 85", values={"x": 85})
+    assert simple_eval("abs(x) > 80", values={"x": -85}, functions={"abs": abs})
+    assert simple_eval("x.y.z + 8", values={("x", "y", "z"): 34}) == 42
