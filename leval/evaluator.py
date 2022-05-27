@@ -8,7 +8,7 @@ from .universe.base import BaseEvaluationUniverse
 from .utils import expand_name
 
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
-DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float, complex))
+DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float))
 
 
 def _default_if_none(value, default):
