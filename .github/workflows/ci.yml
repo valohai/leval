@@ -1,0 +1,53 @@
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: '**/setup.cfg'
+      - name: Install dependencies
+        run: pip install -e .[test]
+      - name: Test with pytest
+        run: pytest -v --cov .
+  lint:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          cache: pip
+          cache-dependency-path: '**/setup.cfg'
+      - run: pip install -e .[lint]
+      - run: flake8 leval --count --statistics
+      - run: mypy leval
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.10'
+          cache: pip
+          cache-dependency-path: '**/setup.cfg'
+      - run: pip install build
+      - run: python -m build .
+      - uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: dist

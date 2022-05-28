@@ -13,6 +13,7 @@ from leval.excs import (
     TooComplex,
 )
 from leval.simple import simple_eval
+from leval.universe.default import EvaluationUniverse
 from leval.universe.weakly_typed import WeaklyTypedSimpleUniverse
 
 values = {
@@ -70,6 +71,12 @@ error_cases = [
     ),
     ("Can't access weird methods off valid names", "abs.__class__", NoSuchValue),
     ("Arbitrary Python code is not allowed", "if x > a:\n    hello()", SyntaxError),
+    ("Can't access attributes off constants", "(3).__class__", InvalidOperation),
+    (
+        "Walruses aren't allowed",
+        "(a := 3) + 8",
+        (SyntaxError, InvalidOperation),  # Error depends on Python version
+    ),
 ]
 
 
@@ -143,3 +150,23 @@ def test_time_limit():
             },
             max_time=0.3,
         )
+
+
+def test_allowed_container_types():
+    # Disallow all container types:
+    evaluator = Evaluator(EvaluationUniverse(), allowed_container_types=[])
+    for expr in ("[1, 2, 3]", "{1, 2, 3}", "(1, 2, 3)"):
+        with pytest.raises(InvalidOperation):
+            evaluator.evaluate_expression(expr)
+
+
+def test_complex():
+    evaluator = Evaluator(EvaluationUniverse(), allowed_constant_types=(int, complex))
+    assert evaluator.evaluate_expression("(6 + 3j) / 3") == 2 + 1j
+
+
+def test_readme_example():
+    assert simple_eval("1 + 2") == 3
+    assert simple_eval("x < -80 or x > 125 or x == 85", values={"x": 85})
+    assert simple_eval("abs(x) > 80", values={"x": -85}, functions={"abs": abs})
+    assert simple_eval("x.y.z + 8", values={("x", "y", "z"): 34}) == 42

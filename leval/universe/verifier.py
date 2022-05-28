@@ -19,7 +19,7 @@ class VerifierUniverse(EvaluationUniverse):
         bin_op = self.ops.get(type(op))
         if not bin_op:
             raise InvalidOperation(  # pragma: no cover
-                "Binary operator {} is not allowed".format(op), node=op
+                f"Binary operator {op} is not allowed", node=op
             )
         return True
 

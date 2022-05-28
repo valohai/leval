@@ -1,24 +1,33 @@
 import ast
 import time
 from functools import partial
-from typing import Any, Optional
+from typing import Any, Optional, Iterable
 
 from .excs import InvalidConstant, InvalidNode, InvalidOperation, Timeout, TooComplex
 from .universe.base import BaseEvaluationUniverse
 from .utils import expand_name
 
+DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
+DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float))
+
+
+def _default_if_none(value, default):
+    return value if value is not None else default
+
 
 class Evaluator(ast.NodeTransformer):
-    allowed_constant_classes = (str, int, float, complex)
-    max_depth = 10
-    max_time = None
+    default_allowed_constant_types: Iterable[type] = DEFAULT_ALLOWED_CONSTANT_TYPES
+    default_allowed_container_types: Iterable[type] = DEFAULT_ALLOWED_CONTAINER_TYPES
+    default_max_depth = 10
 
     def __init__(
         self,
         universe: BaseEvaluationUniverse,
         *,
         max_depth: Optional[int] = None,
-        max_time: Optional[float] = None
+        max_time: Optional[float] = None,
+        allowed_constant_types: Optional[Iterable[type]] = None,
+        allowed_container_types: Optional[Iterable[type]] = None,
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
@@ -26,8 +35,18 @@ class Evaluator(ast.NodeTransformer):
         self.depth = None  # type: Optional[int]
         self.start_time = None  # type: Optional[float]
         self.universe = universe
-        self.max_depth = max_depth if max_depth is not None else self.max_depth
+        self.max_depth = _default_if_none(max_depth, self.default_max_depth)
         self.max_time = float(max_time or 0)
+        self.allowed_constant_types = frozenset(
+            _default_if_none(
+                allowed_constant_types, self.default_allowed_constant_types
+            )
+        )
+        self.allowed_container_types = frozenset(
+            _default_if_none(
+                allowed_container_types, self.default_allowed_container_types
+            )
+        )
 
     def evaluate_expression(self, expression: str) -> Any:
         """
@@ -40,25 +59,21 @@ class Evaluator(ast.NodeTransformer):
     def visit(self, node):  # noqa: D102
         if self.depth >= self.max_depth:
             raise TooComplex(
-                "Expression is too complex ({} > {})".format(
-                    self.depth, self.max_depth
-                ),
+                f"Expression is too complex ({self.depth} > {self.max_depth})",
                 node=node,
             )
         if self.max_time > 0:
             elapsed_time = time.time() - self.start_time
             if elapsed_time > self.max_time:
                 raise Timeout(
-                    "Expression reached time limit {}".format(self.max_time),
+                    f"Expression reached time limit {self.max_time}",
                     node=node,
                 )
         node_name = node.__class__.__name__
-        method = "visit_{}".format(node_name)
+        method = f"visit_{node_name}"
         visitor = getattr(self, method, None)
         if not visitor:
-            raise InvalidNode(
-                "Operation {} is not allowed".format(node_name), node=node
-            )
+            raise InvalidNode(f"Operation {node_name} is not allowed", node=node)
         try:
             self.depth += 1
             return visitor(node)
@@ -75,9 +90,7 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Call(self, node):  # noqa: D102
         if not isinstance(node.func, ast.Name):
-            raise InvalidOperation(
-                "Invalid call to func {}".format(node.func), node=node
-            )
+            raise InvalidOperation(f"Invalid call to func {node.func}", node=node)
         if node.keywords:
             raise InvalidOperation("Kwarg calls are not allowed", node=node)
         arg_getters = [partial(self.visit, arg) for arg in node.args]
@@ -91,11 +104,11 @@ class Evaluator(ast.NodeTransformer):
         else:
             value = node.value
 
-        if isinstance(value, self.allowed_constant_classes):
+        if isinstance(value, tuple(self.allowed_constant_types)):
             return value
 
         raise InvalidConstant(
-            "Invalid constant {node} ({type})".format(node=node, type=type(value)),
+            f"Invalid constant {node} ({type(value)})",
             node=node,
         )
 
@@ -130,13 +143,17 @@ class Evaluator(ast.NodeTransformer):
         if isinstance(node.op, ast.Not):
             return not operand
         raise InvalidOperation(  # pragma: no cover
-            "invalid unary op: {}".format(node.op), node=node
+            f"invalid unary op: {node.op}", node=node
         )
 
     def visit_Set(self, node):  # noqa: D102
-        return set(self.visit(n) for n in node.elts)
+        if set not in self.allowed_container_types:
+            raise InvalidOperation("Set construction not allowed", node=node)
+        return {self.visit(n) for n in node.elts}
 
     def visit_Tuple(self, node):  # noqa: D102
+        if tuple not in self.allowed_container_types:
+            raise InvalidOperation("Tuple construction not allowed", node=node)
         return tuple(self.visit(n) for n in node.elts)
 
     def visit_Expression(self, node):  # noqa: D102
