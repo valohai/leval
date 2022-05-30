@@ -1,5 +1,10 @@
 # Leval
 
+![License](https://img.shields.io/github/license/valohai/leval)
+[![Coverage](https://img.shields.io/codecov/c/github/valohai/leval)](https://app.codecov.io/gh/valohai/leval)
+[![CI](https://github.com/valohai/leval/actions/workflows/ci.yml/badge.svg)](https://github.com/valohai/leval/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/leval)](https://pypi.org/project/leval)
+
 > A limited expression evaluator
 
 A little more suited for dynamic usage than `ast.literal_eval()`
