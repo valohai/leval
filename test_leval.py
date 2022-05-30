@@ -135,6 +135,8 @@ def test_weak_typing():
         weak_eval("s * 8")
     with pytest.raises(InvalidOperands):
         weak_eval("8 * s")
+    with pytest.raises(ZeroDivisionError):
+        weak_eval("s / 0")
 
 
 def test_time_limit():
