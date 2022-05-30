@@ -168,6 +168,12 @@ def test_complex():
     assert evaluator.evaluate_expression("(6 + 3j) / 3") == 2 + 1j
 
 
+def test_int_only():
+    evaluator = Evaluator(EvaluationUniverse(), allowed_constant_types=(int,))
+    with pytest.raises(InvalidOperation):
+        evaluator.evaluate_expression("2.5 + 3")
+
+
 def test_readme_example():
     assert simple_eval("1 + 2") == 3
     assert simple_eval("x < -80 or x > 125 or x == 85", values={"x": 85})
