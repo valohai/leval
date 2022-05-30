@@ -77,6 +77,7 @@ error_cases = [
         "(a := 3) + 8",
         (SyntaxError, InvalidOperation),  # Error depends on Python version
     ),
+    ("Power isn't on", "5 ** 2", InvalidOperation),
 ]
 
 
