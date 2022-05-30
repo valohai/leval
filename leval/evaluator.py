@@ -15,6 +15,16 @@ def _default_if_none(value, default):
     return value if value is not None else default
 
 
+def _get_constant_node_value(node):
+    if hasattr(node, "value"):  # Python 3.8 and above
+        return node.value
+    if isinstance(node, ast.Num):
+        return node.n
+    if isinstance(node, ast.Str):
+        return node.s
+    raise InvalidConstant(f"Invalid constant {node}", node=node)  # pragma: no cover
+
+
 class Evaluator(ast.NodeTransformer):
     default_allowed_constant_types: Iterable[type] = DEFAULT_ALLOWED_CONSTANT_TYPES
     default_allowed_container_types: Iterable[type] = DEFAULT_ALLOWED_CONTAINER_TYPES
@@ -97,12 +107,7 @@ class Evaluator(ast.NodeTransformer):
         return self.universe.evaluate_function(node.func.id, arg_getters)
 
     def _visit_constantlike(self, node):
-        if isinstance(node, ast.Num):
-            value = node.n
-        elif isinstance(node, ast.Str):
-            value = node.s
-        else:
-            value = node.value
+        value = _get_constant_node_value(node)
 
         if isinstance(value, tuple(self.allowed_constant_types)):
             return value
@@ -118,7 +123,9 @@ class Evaluator(ast.NodeTransformer):
 
     def visit_Name(self, node):  # noqa: D102
         if not isinstance(node.ctx, ast.Load):
-            raise InvalidOperation("Invalid name operation", node=node)
+            raise InvalidOperation(  # pragma: no cover
+                "Invalid name operation", node=node
+            )
         return self.universe.get_value(node.id)
 
     def visit_Attribute(self, node):  # noqa: D102

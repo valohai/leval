@@ -78,6 +78,7 @@ error_cases = [
         (SyntaxError, InvalidOperation),  # Error depends on Python version
     ),
     ("Power isn't on", "5 ** 2", InvalidOperation),
+    ("Assignment is not allowed", "x = 5", SyntaxError),
 ]
 
 
@@ -135,6 +136,8 @@ def test_weak_typing():
         weak_eval("s * 8")
     with pytest.raises(InvalidOperands):
         weak_eval("8 * s")
+    with pytest.raises(ZeroDivisionError):
+        weak_eval("s / 0")
 
 
 def test_time_limit():
@@ -164,6 +167,12 @@ def test_allowed_container_types():
 def test_complex():
     evaluator = Evaluator(EvaluationUniverse(), allowed_constant_types=(int, complex))
     assert evaluator.evaluate_expression("(6 + 3j) / 3") == 2 + 1j
+
+
+def test_int_only():
+    evaluator = Evaluator(EvaluationUniverse(), allowed_constant_types=(int,))
+    with pytest.raises(InvalidOperation):
+        evaluator.evaluate_expression("2.5 + 3")
 
 
 def test_readme_example():

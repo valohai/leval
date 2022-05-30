@@ -26,12 +26,11 @@ def weakly_typed_operation(func, coerce=float, check=None):
     def op(*operands):
         try:
             return checked_call(operands)
-        except (TypeError, ValueError):
+        except (TypeError, ValueError) as orig_exc:
             try:
                 return checked_call([coerce(x) for x in operands])
-            except Exception:
-                pass
-            raise
+            except Exception as exc:
+                raise exc from orig_exc
 
     return op
 
