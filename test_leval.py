@@ -78,6 +78,7 @@ error_cases = [
         (SyntaxError, InvalidOperation),  # Error depends on Python version
     ),
     ("Power isn't on", "5 ** 2", InvalidOperation),
+    ("Assignment is not allowed", "x = 5", SyntaxError),
 ]
 
 
