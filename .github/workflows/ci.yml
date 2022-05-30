@@ -24,6 +24,7 @@ jobs:
         run: pip install -e .[test]
       - name: Test with pytest
         run: pytest -v --cov .
+      - uses: codecov/codecov-action@v2
   lint:
     runs-on: ubuntu-22.04
     steps:
