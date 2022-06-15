@@ -70,7 +70,13 @@ class Evaluator(ast.NodeTransformer):
         """
         self.depth = 0
         self.start_time = time.time()
-        return self.visit(ast.parse(expression, "<expression>", "eval"))
+        return self.visit(self.parse(expression))
+
+    def parse(self, expression: str) -> ast.AST:
+        """
+        Parse the given expression and return the AST.
+        """
+        return ast.parse(expression, "<expression>", "eval")
 
     def visit(self, node):  # noqa: D102
         if self.depth >= self.max_depth:
