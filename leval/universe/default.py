@@ -4,8 +4,8 @@ import operator
 from numbers import Number
 from typing import Any, Callable, List
 
-from ..excs import InvalidOperands, InvalidOperation
-from .base import BaseEvaluationUniverse
+from leval.excs import InvalidOperands, InvalidOperation
+from leval.universe.base import BaseEvaluationUniverse
 
 
 def numbers_only_binop(name, func):

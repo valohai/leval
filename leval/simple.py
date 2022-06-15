@@ -1,8 +1,8 @@
 from typing import Any, Callable, Dict, Optional, Union
 
-from .evaluator import Evaluator
-from .universe.simple import SimpleUniverse
-from .universe.verifier import VerifierUniverse
+from leval.evaluator import Evaluator
+from leval.universe.simple import SimpleUniverse
+from leval.universe.verifier import VerifierUniverse
 
 
 def simple_eval(

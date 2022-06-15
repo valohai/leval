@@ -1,5 +1,5 @@
-from ..excs import InvalidOperation
-from .default import EvaluationUniverse
+from leval.excs import InvalidOperation
+from leval.universe.default import EvaluationUniverse
 
 
 class VerifierUniverse(EvaluationUniverse):

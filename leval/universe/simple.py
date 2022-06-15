@@ -1,7 +1,7 @@
 from typing import Any, Callable, Dict, Union
 
-from ..excs import NoSuchFunction, NoSuchValue
-from .default import EvaluationUniverse
+from leval.excs import NoSuchFunction, NoSuchValue
+from leval.universe.default import EvaluationUniverse
 
 
 class SimpleUniverse(EvaluationUniverse):

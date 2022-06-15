@@ -2,9 +2,9 @@ import ast
 import functools
 import operator
 
-from ..excs import InvalidOperands
-from .default import EvaluationUniverse
-from .simple import SimpleUniverse
+from leval.excs import InvalidOperands
+from leval.universe.default import EvaluationUniverse
+from leval.universe.simple import SimpleUniverse
 
 
 def weakly_typed_operation(func, coerce=float, check=None):
