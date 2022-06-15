@@ -1,7 +1,7 @@
 import ast
 from typing import Tuple
 
-from .excs import InvalidOperation
+from leval.excs import InvalidOperation
 
 
 def expand_name(node: ast.Attribute) -> Tuple[str, ...]:

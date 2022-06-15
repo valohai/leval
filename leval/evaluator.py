@@ -1,11 +1,17 @@
 import ast
 import time
 from functools import partial
-from typing import Any, Optional, Iterable
+from typing import Any, Iterable, Optional
 
-from .excs import InvalidConstant, InvalidNode, InvalidOperation, Timeout, TooComplex
-from .universe.base import BaseEvaluationUniverse
-from .utils import expand_name
+from leval.excs import (
+    InvalidConstant,
+    InvalidNode,
+    InvalidOperation,
+    Timeout,
+    TooComplex,
+)
+from leval.universe.base import BaseEvaluationUniverse
+from leval.utils import expand_name
 
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
 DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float))
