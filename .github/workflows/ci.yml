@@ -2,53 +2,51 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   test:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
-        python-version: [ '3.6', '3.7', '3.8', '3.9', '3.10' ]
+        python-version: ["3.8", "3.9", "3.10"]
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: '**/setup.cfg'
+          cache-dependency-path: "**/setup.cfg"
       - name: Install dependencies
         run: pip install -e .[test]
       - name: Test with pytest
         run: pytest -v --cov .
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v3
   lint:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.11"
           cache: pip
-          cache-dependency-path: '**/setup.cfg'
-      - run: pip install -e .[lint]
-      - run: flake8 leval --count --statistics
-      - run: mypy leval
+          cache-dependency-path: "**/setup.cfg"
+      - uses: pre-commit/action@v3.0.0
   build:
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v2
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.11"
           cache: pip
-          cache-dependency-path: '**/setup.cfg'
+          cache-dependency-path: "**/setup.cfg"
       - run: pip install build
       - run: python -m build .
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: dist
           path: dist

@@ -4,7 +4,10 @@ from typing import Optional
 
 class EvaluatorError(Exception):
     def __init__(  # noqa: D107
-        self, message: str, *, node: Optional[ast.AST] = None
+        self,
+        message: str,
+        *,
+        node: Optional[ast.AST] = None,
     ) -> None:
         super().__init__(message)
         self.node = node

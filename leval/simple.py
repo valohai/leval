@@ -8,11 +8,11 @@ from leval.universe.verifier import VerifierUniverse
 def simple_eval(
     expression: str,
     *,
-    functions: Dict[str, Callable] = None,
-    values: Dict[Union[str, tuple], Any] = None,
+    functions: Optional[Dict[str, Callable]] = None,
+    values: Optional[Dict[Union[str, tuple], Any]] = None,
     max_depth=10,
     max_time: Optional[float] = None,
-    verify_only: bool = False
+    verify_only: bool = False,
 ):
     """
     Safely evaluate a simple expression.

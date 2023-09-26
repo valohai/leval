@@ -17,7 +17,7 @@ def numbers_only_binop(name, func):
     def binop(a, b):
         if not (isinstance(a, Number) and isinstance(b, Number)):
             raise InvalidOperands(
-                f'operator "{name}" can only be used with numbers, not {a!r} and {b!r}'
+                f'operator "{name}" can only be used with numbers, not {a!r} and {b!r}',
             )
         return func(a, b)
 
@@ -45,22 +45,29 @@ class EvaluationUniverse(BaseEvaluationUniverse):
     ops = DEFAULT_OPS
 
     def evaluate_binary_op(  # noqa: D102
-        self, op: ast.AST, left: Any, right: Any
+        self,
+        op: ast.AST,
+        left: Any,
+        right: Any,
     ) -> Any:
         bin_op = self.ops.get(type(op))
         if not bin_op:
             raise InvalidOperation(  # pragma: no cover
-                f"Binary operator {op} is not allowed", node=op
+                f"Binary operator {op} is not allowed",
+                node=op,
             )
         return bin_op(left, right)
 
     def evaluate_bool_op(  # noqa: D102
-        self, op: ast.AST, value_getters: List[Callable[[], Any]]
+        self,
+        op: ast.AST,
+        value_getters: List[Callable[[], Any]],
     ):
         if isinstance(op, ast.And):
             return all(g() for g in value_getters)
         if isinstance(op, ast.Or):
             return any(g() for g in value_getters)
         raise InvalidOperation(  # pragma: no cover
-            f"Boolean operator {op} is not allowed", node=op
+            f"Boolean operator {op} is not allowed",
+            node=op,
         )

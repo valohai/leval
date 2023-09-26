@@ -6,7 +6,10 @@ from leval.universe.default import EvaluationUniverse
 
 class SimpleUniverse(EvaluationUniverse):
     def __init__(
-        self, *, functions: Dict[str, Callable], values: Dict[Union[str, tuple], Any]
+        self,
+        *,
+        functions: Dict[str, Callable],
+        values: Dict[Union[str, tuple], Any],
     ):
         """
         Initialize a simple evaluation universe.
@@ -25,7 +28,7 @@ class SimpleUniverse(EvaluationUniverse):
         try:
             return self.values[name]
         except KeyError:
-            raise NoSuchValue(f"No value {name}")
+            raise NoSuchValue(f"No value {name}") from None
 
     def evaluate_function(self, name, arg_getters):  # noqa: D102
         func = self.functions.get(name)

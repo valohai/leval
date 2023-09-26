@@ -55,13 +55,15 @@ class Evaluator(ast.NodeTransformer):
         self.max_time = float(max_time or 0)
         self.allowed_constant_types = frozenset(
             _default_if_none(
-                allowed_constant_types, self.default_allowed_constant_types
-            )
+                allowed_constant_types,
+                self.default_allowed_constant_types,
+            ),
         )
         self.allowed_container_types = frozenset(
             _default_if_none(
-                allowed_container_types, self.default_allowed_container_types
-            )
+                allowed_container_types,
+                self.default_allowed_container_types,
+            ),
         )
 
     def evaluate_expression(self, expression: str) -> Any:
@@ -136,7 +138,8 @@ class Evaluator(ast.NodeTransformer):
     def visit_Name(self, node):  # noqa: D102
         if not isinstance(node.ctx, ast.Load):
             raise InvalidOperation(  # pragma: no cover
-                "Invalid name operation", node=node
+                "Invalid name operation",
+                node=node,
             )
         return self.universe.get_value(node.id)
 
@@ -162,7 +165,8 @@ class Evaluator(ast.NodeTransformer):
         if isinstance(node.op, ast.Not):
             return not operand
         raise InvalidOperation(  # pragma: no cover
-            f"invalid unary op: {node.op}", node=node
+            f"invalid unary op: {node.op}",
+            node=node,
         )
 
     def visit_Set(self, node):  # noqa: D102

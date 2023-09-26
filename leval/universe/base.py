@@ -24,10 +24,14 @@ class BaseEvaluationUniverse:
         raise NoSuchFunction(f"No function {name}")  # pragma: no cover
 
     def evaluate_binary_op(  # noqa: D102
-        self, op: ast.AST, left: Any, right: Any
+        self,
+        op: ast.AST,
+        left: Any,
+        right: Any,
     ) -> Any:
         raise InvalidOperation(  # pragma: no cover
-            f"Binary operator {op} is not allowed", node=op
+            f"Binary operator {op} is not allowed",
+            node=op,
         )
 
     def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
@@ -38,5 +42,6 @@ class BaseEvaluationUniverse:
         the true values of the values being compared.
         """
         raise InvalidOperation(  # pragma: no cover
-            f"Boolean operator {op} is not allowed", node=op
+            f"Boolean operator {op} is not allowed",
+            node=op,
         )
