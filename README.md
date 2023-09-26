@@ -11,7 +11,7 @@ A little more suited for dynamic usage than `ast.literal_eval()`
 while remaining as safe as the functions you pass in.
 
 Under the hood, it uses the `ast` module to parse the expression,
-then walks the AST in Python to evaluate the result.  You can
+then walks the AST in Python to evaluate the result. You can
 also specify a depth limit for the complexity of the expression,
 as well as a time limit for the evaluation.
 
@@ -45,5 +45,5 @@ Under the hood, `simple_eval` simply
    and operations available
 2. creates an Evaluator to evaluate the expression with the given universe
 
-Both of these classes are designed to be easily subclassable.  There are examples
+Both of these classes are designed to be easily subclassable. There are examples
 in the `test_leval.py` file.
