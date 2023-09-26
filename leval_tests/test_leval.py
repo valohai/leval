@@ -114,7 +114,11 @@ def test_error(description, case, expected):
 )
 def test_verify(kind, description, case, expected):
     fn = lambda: simple_eval(  # noqa: E731
-        case, values=values, functions=functions, max_depth=6, verify_only=True
+        case,
+        values=values,
+        functions=functions,
+        max_depth=6,
+        verify_only=True,
     )
     if kind == "bad":
         with pytest.raises(expected):

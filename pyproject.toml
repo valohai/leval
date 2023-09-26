@@ -46,6 +46,7 @@ ignore = [
 line-length = 88
 select = [
     "B",
+    "COM",
     "D",
     "E",
     "F",

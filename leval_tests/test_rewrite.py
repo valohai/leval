@@ -58,7 +58,8 @@ def test_dunder_rewriter_with_rewriting_universe():
 
 def test_call_rewriter():
     evu = SimpleUniverse(
-        values={}, functions={"get_value": lambda kw: REWRITE_TEST_MAPPING[kw]}
+        values={},
+        functions={"get_value": lambda kw: REWRITE_TEST_MAPPING[kw]},
     )
     evaluator = FunctionRewriteEvaluator(evu)
     assert evaluator.evaluate_expression("continue * break + break - def") == 42

@@ -6,7 +6,10 @@ from leval.universe.default import EvaluationUniverse
 
 class SimpleUniverse(EvaluationUniverse):
     def __init__(
-        self, *, functions: Dict[str, Callable], values: Dict[Union[str, tuple], Any]
+        self,
+        *,
+        functions: Dict[str, Callable],
+        values: Dict[Union[str, tuple], Any],
     ):
         """
         Initialize a simple evaluation universe.

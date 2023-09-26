@@ -12,7 +12,7 @@ def simple_eval(
     values: Dict[Union[str, tuple], Any] = None,
     max_depth=10,
     max_time: Optional[float] = None,
-    verify_only: bool = False
+    verify_only: bool = False,
 ):
     """
     Safely evaluate a simple expression.

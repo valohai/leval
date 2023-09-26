@@ -20,7 +20,8 @@ def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
             attr_bits.append(kid.id)
         else:
             raise InvalidOperation(  # pragma: no cover
-                f"Unsupported attribute structure in {node}", node=node
+                f"Unsupported attribute structure in {node}",
+                node=node,
             )
 
     walk_attr(node)
