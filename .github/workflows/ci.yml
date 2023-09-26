@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [master]
+    tags: ["v*"]
   pull_request:
     branches: [master]
 
@@ -50,3 +51,24 @@ jobs:
         with:
           name: dist
           path: dist
+  publish:
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')
+    needs:
+      - build
+    name: Upload release to PyPI
+    runs-on: ubuntu-latest
+    environment:
+      name: release
+      url: https://pypi.org/p/leval/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: dist
+          path: dist/
+      - name: Publish package distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          verbose: true
+          print-hash: true
