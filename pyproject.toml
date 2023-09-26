@@ -14,10 +14,6 @@ authors = [
 ]
 
 [project.optional-dependencies]
-lint = [
-    "black==22.3.0",
-    "mypy==0.960",
-]
 test = [
     "pytest-cov==2.10.1",
     "pytest<7.0",
