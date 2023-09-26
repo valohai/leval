@@ -1,5 +1,5 @@
 """
-This file contains tests/examples for the expression rewriting behavior.
+Tests and examples for the expression rewriting behavior.
 """
 import pytest
 
