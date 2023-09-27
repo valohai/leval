@@ -46,7 +46,7 @@ class RewriterEvaluator(Evaluator):
             if (
                 tok.type == tokenize.NAME
                 and keyword.iskeyword(tok.string)
-                and keyword not in EXPRESSION_KEYWORDS
+                and tok.string not in EXPRESSION_KEYWORDS
             ):
                 tok = tok._replace(string=self.rewrite_keyword(tok.string))
             bits.append(tok)
