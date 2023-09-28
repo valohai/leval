@@ -73,6 +73,12 @@ def test_rewriter_isnt_silly():
     assert evaluator.evaluate_expression('"continue"') == "continue"
 
 
+def test_rewriter_expressions():
+    evu = SimpleUniverse(values={"quit": False, "kw_continue": True}, functions={})
+    evaluator = PrefixRewriteEvaluator(evu)
+    assert evaluator.evaluate_expression("quit or continue")
+
+
 @pytest.mark.parametrize(
     "case",
     [
