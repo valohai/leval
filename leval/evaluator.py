@@ -1,6 +1,7 @@
 import ast
 import time
 from functools import partial
+from types import NoneType
 from typing import Any, Iterable, Optional
 
 from leval.excs import (
@@ -14,7 +15,7 @@ from leval.universe.base import BaseEvaluationUniverse
 from leval.utils import expand_name
 
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
-DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float))
+DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float, NoneType))
 
 
 def _default_if_none(value, default):
