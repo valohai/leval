@@ -1,21 +1,24 @@
 import ast
 import time
 from functools import partial
-from types import NoneType
 from typing import Any, Iterable, Optional
 
 from leval.excs import (
     InvalidConstant,
     InvalidNode,
     InvalidOperation,
+    NoSuchValue,
     Timeout,
     TooComplex,
 )
 from leval.universe.base import BaseEvaluationUniverse
 from leval.utils import expand_name
 
+NoneType = type(None)
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
-DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float, NoneType))
+DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset(
+    (str, int, float, NoneType),
+)
 
 
 def _default_if_none(value, default):
@@ -33,7 +36,7 @@ def _get_constant_node_value(node):
 
 
 class Evaluator(ast.NodeTransformer):
-    default_allowed_constant_types: Iterable[type] = DEFAULT_ALLOWED_CONSTANT_TYPES
+    default_allowed_constant_types: Iterable[object] = DEFAULT_ALLOWED_CONSTANT_TYPES
     default_allowed_container_types: Iterable[type] = DEFAULT_ALLOWED_CONTAINER_TYPES
     default_max_depth = 10
 
@@ -66,6 +69,13 @@ class Evaluator(ast.NodeTransformer):
                 self.default_allowed_container_types,
             ),
         )
+
+    def _none_if_not_defined(self, value):
+        try:
+            result = self.visit(value)
+        except NoSuchValue:
+            result = None
+        return result
 
     def evaluate_expression(self, expression: str) -> Any:
         """
@@ -108,9 +118,18 @@ class Evaluator(ast.NodeTransformer):
     def visit_Compare(self, node):  # noqa: D102
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
-        left = self.visit(node.left)
-        right = self.visit(node.comparators[0])
         op = node.ops[0]
+        if type(op) in [ast.Is, ast.IsNot]:
+            left = self._none_if_not_defined(node.left)
+            right = self._none_if_not_defined(node.comparators[0])
+            return self.universe.evaluate_identity_op(
+                op,
+                left,
+                right,
+            )
+        else:
+            left = self.visit(node.left)
+            right = self.visit(node.comparators[0])
         return self.universe.evaluate_binary_op(op, left, right)
 
     def visit_Call(self, node):  # noqa: D102

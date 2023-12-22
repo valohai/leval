@@ -38,6 +38,8 @@ DEFAULT_OPS = {
     ast.LtE: operator.le,
     ast.In: lambda a, b: a in b,
     ast.NotIn: lambda a, b: a not in b,
+    ast.Is: operator.is_,
+    ast.IsNot: operator.is_not,
 }
 
 
@@ -71,3 +73,21 @@ class EvaluationUniverse(BaseEvaluationUniverse):
             f"Boolean operator {op} is not allowed",
             node=op,
         )
+
+    def evaluate_identity_op(  # noqa: D102
+        self,
+        op: ast.AST,
+        left: Any,
+        right: Any,
+    ) -> bool:
+        id_op = self.ops.get(type(op))
+        if not id_op:
+            raise InvalidOperation(  # pragma: no cover
+                f"Identity operator {op} is not allowed",
+                node=op,
+            )
+        if isinstance(op, ast.Is) and left is right:
+            return True
+        if isinstance(op, ast.IsNot) and left is not right:
+            return True
+        return False

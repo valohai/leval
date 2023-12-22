@@ -28,3 +28,12 @@ class VerifierUniverse(EvaluationUniverse):
         for getter in value_getters:
             getter()
         return True
+
+    def evaluate_identity_op(self, op, left, right):  # noqa: D102
+        id_op = self.ops.get(type(op))
+        if not id_op:
+            raise InvalidOperation(  # pragma: no cover
+                f"Identity operator {op} is not allowed",
+                node=op,
+            )
+        return True

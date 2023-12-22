@@ -45,3 +45,15 @@ class BaseEvaluationUniverse:
             f"Boolean operator {op} is not allowed",
             node=op,
         )
+
+    def evaluate_identity_op(self, op: ast.AST, left: Any, right: Any):
+        """
+        Evaluate an identity operation with the given arguments.
+
+        Invoke the functions in `value_getters` to acquire
+        the true values of the values being compared.
+        """
+        raise InvalidOperation(  # pragma: no cover
+            f"Identity operator {op} is not allowed",
+            node=op,
+        )
