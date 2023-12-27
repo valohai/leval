@@ -16,7 +16,6 @@ from leval.simple import simple_eval
 from leval.universe.default import EvaluationUniverse
 from leval.universe.weakly_typed import WeaklyTypedSimpleUniverse
 
-NoneType = type(None)
 values = {
     "foo": 7,
     "bar": 8,
