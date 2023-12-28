@@ -122,11 +122,6 @@ class Evaluator(ast.NodeTransformer):
         if type(op) in [ast.Is, ast.IsNot]:
             left = self._none_if_not_defined(node.left)
             right = self._none_if_not_defined(node.comparators[0])
-            return self.universe.evaluate_identity_op(
-                op,
-                left,
-                right,
-            )
         else:
             left = self.visit(node.left)
             right = self.visit(node.comparators[0])

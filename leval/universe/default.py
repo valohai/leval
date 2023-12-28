@@ -73,21 +73,3 @@ class EvaluationUniverse(BaseEvaluationUniverse):
             f"Boolean operator {op} is not allowed",
             node=op,
         )
-
-    def evaluate_identity_op(  # noqa: D102
-        self,
-        op: ast.AST,
-        left: Any,
-        right: Any,
-    ) -> bool:
-        id_op = self.ops.get(type(op))
-        if not id_op:
-            raise InvalidOperation(  # pragma: no cover
-                f"Identity operator {op} is not allowed",
-                node=op,
-            )
-        if isinstance(op, ast.Is) and left is right:
-            return True
-        if isinstance(op, ast.IsNot) and left is not right:
-            return True
-        return False
