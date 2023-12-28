@@ -55,6 +55,8 @@ class WeaklyTypedEvaluationUniverse(EvaluationUniverse):
         ast.LtE: weakly_typed_operation(operator.le),
         ast.In: lambda a, b: a in b,
         ast.NotIn: lambda a, b: a not in b,
+        ast.Is: operator.is_,
+        ast.IsNot: operator.is_not,
     }
 
 
