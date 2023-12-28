@@ -1,4 +1,5 @@
 import ast
+import sys
 import time
 from functools import partial
 from typing import Any, Iterable, Optional
@@ -14,7 +15,12 @@ from leval.excs import (
 from leval.universe.base import BaseEvaluationUniverse
 from leval.utils import expand_name
 
-NoneType = type(None)
+if sys.version_info < (3, 10):
+    NoneType = type(None)
+else:
+    from types import NoneType
+
+
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
 DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset(
     (str, int, float, NoneType),
@@ -119,7 +125,7 @@ class Evaluator(ast.NodeTransformer):
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
         op = node.ops[0]
-        if type(op) in [ast.Is, ast.IsNot]:
+        if isinstance(op, (ast.Is, ast.IsNot)):
             left = self._none_if_not_defined(node.left)
             right = self._none_if_not_defined(node.comparators[0])
         else:
