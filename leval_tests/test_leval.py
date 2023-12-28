@@ -47,6 +47,7 @@ success_cases = [
         True,
     ),
     ("identity operator: Is (variable is not present in values)", "abc is None", True),
+    ("identity operator: Is (variable is not present in values)", "abc is 4", False),
     ("identity operator: Is (variable is present in values)", "bar is None", False),
 ]
 
