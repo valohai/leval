@@ -1,7 +1,7 @@
 import ast
 from typing import Tuple
 
-from leval.excs import InvalidOperation
+from leval.excs import InvalidAttribute
 
 
 def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
@@ -18,8 +18,13 @@ def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
             walk_attr(kid.value)
         elif isinstance(kid, ast.Name):
             attr_bits.append(kid.id)
+        elif isinstance(kid, ast.Constant):
+            raise InvalidAttribute(
+                f"Accessing attributes of constants ({kid}) is not allowed",
+                node=node,
+            )
         else:
-            raise InvalidOperation(  # pragma: no cover
+            raise InvalidAttribute(  # pragma: no cover
                 f"Unsupported attribute structure in {node}",
                 node=node,
             )

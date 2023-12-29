@@ -5,6 +5,7 @@ import pytest
 
 from leval.evaluator import Evaluator
 from leval.excs import (
+    InvalidAttribute,
     InvalidOperands,
     InvalidOperation,
     NoSuchFunction,
@@ -81,7 +82,8 @@ error_cases = [
     ),
     ("Can't access weird methods off valid names", "abs.__class__", NoSuchValue),
     ("Arbitrary Python code is not allowed", "if x > a:\n    hello()", SyntaxError),
-    ("Can't access attributes off constants", "(3).__class__", InvalidOperation),
+    ("Can't access numeric constants' attributes", "(3).__class__", InvalidAttribute),
+    ("Can't access Nones' attributes", "None.__class__", InvalidAttribute),
     (
         "Walruses aren't allowed",
         "(a := 3) + 8",
