@@ -1,6 +1,5 @@
 import ast
 import time
-from _ast import AST
 from functools import partial
 from typing import Any, Iterable, Optional
 
@@ -76,12 +75,6 @@ class Evaluator(ast.NodeTransformer):
             ),
         )
 
-    def _none_if_not_defined(self, value: AST) -> Any:
-        try:
-            return self.visit(value)
-        except NoSuchValue:
-            return None
-
     def evaluate_expression(self, expression: str) -> Any:
         """
         Evaluate the given expression and return the ultimate result.
@@ -120,13 +113,19 @@ class Evaluator(ast.NodeTransformer):
         finally:
             self.depth -= 1
 
+    def _visit_or_none(self, value: ast.AST) -> Any:
+        try:
+            return self.visit(value)
+        except NoSuchValue:
+            return None
+
     def visit_Compare(self, node):  # noqa: D102
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
         op = node.ops[0]
         if isinstance(op, (ast.Is, ast.IsNot)):
-            left = self._none_if_not_defined(node.left)
-            right = self._none_if_not_defined(node.comparators[0])
+            left = self._visit_or_none(node.left)
+            right = self._visit_or_none(node.comparators[0])
         else:
             left = self.visit(node.left)
             right = self.visit(node.comparators[0])
