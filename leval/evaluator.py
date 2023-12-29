@@ -22,7 +22,12 @@ except ImportError:
 
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
 DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset(
-    (str, int, float, NoneType),
+    (
+        str,
+        int,  # NB: this implicitly includes bool
+        float,
+        NoneType,
+    ),
 )
 
 

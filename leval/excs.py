@@ -29,6 +29,10 @@ class InvalidOperands(InvalidOperation):
     pass
 
 
+class InvalidAttribute(InvalidOperation):
+    pass
+
+
 class NoSuchValue(NameError, EvaluatorError):
     pass
 
