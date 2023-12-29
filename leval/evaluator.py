@@ -1,6 +1,6 @@
 import ast
-import sys
 import time
+from _ast import AST
 from functools import partial
 from typing import Any, Iterable, Optional
 
@@ -15,10 +15,10 @@ from leval.excs import (
 from leval.universe.base import BaseEvaluationUniverse
 from leval.utils import expand_name
 
-if sys.version_info < (3, 10):
-    NoneType = type(None)
-else:
+try:
     from types import NoneType
+except ImportError:
+    NoneType = type(None)  # type: ignore
 
 
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
@@ -42,7 +42,7 @@ def _get_constant_node_value(node):
 
 
 class Evaluator(ast.NodeTransformer):
-    default_allowed_constant_types: Iterable[object] = DEFAULT_ALLOWED_CONSTANT_TYPES
+    default_allowed_constant_types: Iterable[type] = DEFAULT_ALLOWED_CONSTANT_TYPES
     default_allowed_container_types: Iterable[type] = DEFAULT_ALLOWED_CONTAINER_TYPES
     default_max_depth = 10
 
@@ -76,12 +76,11 @@ class Evaluator(ast.NodeTransformer):
             ),
         )
 
-    def _none_if_not_defined(self, value):
+    def _none_if_not_defined(self, value: AST) -> Any:
         try:
-            result = self.visit(value)
+            return self.visit(value)
         except NoSuchValue:
-            result = None
-        return result
+            return None
 
     def evaluate_expression(self, expression: str) -> Any:
         """
