@@ -84,6 +84,8 @@ error_cases = [
     ("Arbitrary Python code is not allowed", "if x > a:\n    hello()", SyntaxError),
     ("Can't access numeric constants' attributes", "(3).__class__", InvalidAttribute),
     ("Can't access Nones' attributes", "None.__class__", InvalidAttribute),
+    ("Can't access Falses' attributes", "False.__class__", InvalidAttribute),
+    ("Can't access Trues' attributes", "True.__class__", InvalidAttribute),
     (
         "Walruses aren't allowed",
         "(a := 3) + 8",
