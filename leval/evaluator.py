@@ -7,14 +7,23 @@ from leval.excs import (
     InvalidConstant,
     InvalidNode,
     InvalidOperation,
+    NoSuchValue,
     Timeout,
     TooComplex,
 )
 from leval.universe.base import BaseEvaluationUniverse
 from leval.utils import expand_name
 
+try:
+    from types import NoneType
+except ImportError:
+    NoneType = type(None)  # type: ignore
+
+
 DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
-DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset((str, int, float))
+DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset(
+    (str, int, float, NoneType),
+)
 
 
 def _default_if_none(value, default):
@@ -104,12 +113,22 @@ class Evaluator(ast.NodeTransformer):
         finally:
             self.depth -= 1
 
+    def _visit_or_none(self, value: ast.AST) -> Any:
+        try:
+            return self.visit(value)
+        except NoSuchValue:
+            return None
+
     def visit_Compare(self, node):  # noqa: D102
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
-        left = self.visit(node.left)
-        right = self.visit(node.comparators[0])
         op = node.ops[0]
+        if isinstance(op, (ast.Is, ast.IsNot)):
+            left = self._visit_or_none(node.left)
+            right = self._visit_or_none(node.comparators[0])
+        else:
+            left = self.visit(node.left)
+            right = self.visit(node.comparators[0])
         return self.universe.evaluate_binary_op(op, left, right)
 
     def visit_Call(self, node):  # noqa: D102

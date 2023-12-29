@@ -14,6 +14,7 @@ EXPRESSION_KEYWORDS = {
     "and",
     "for",
     "in",
+    "is",
     "not",
     "or",
 }

@@ -40,9 +40,19 @@ success_cases = [
     ("complex comparison", "(8, 3) >= (9, 2)", False),
     ("precedence (no parens here!)", "4 + 3 * 5 + 2", 21),
     ("precedence (with parens)", "4 + 3 * (5 + 2)", 25),
+    ("identity operator: is not", "foo is not None", True),
+    (
+        "identity operator: Is ((variable is present in values as None)",
+        "never is None",
+        True,
+    ),
+    ("identity operator: Is (variable is not present in values)", "abc is None", True),
+    ("identity operator: Is (variable is not present in values)", "abc is 4", False),
+    ("identity operator: Is (variable is present in values)", "bar is None", False),
 ]
 
 error_cases = [
+    ("Undefined variable comparison", "abc > 5", NoSuchValue),
     ("Can't index", "indx[9]", InvalidOperation),
     ("Can't call arbitrary functions", '__import__("sys")', NoSuchFunction),
     ("Invalid name", "njep + nop", NoSuchValue),
