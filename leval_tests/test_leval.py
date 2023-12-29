@@ -194,3 +194,11 @@ def test_readme_example():
     assert simple_eval("x < -80 or x > 125 or x == 85", values={"x": 85})
     assert simple_eval("abs(x) > 80", values={"x": -85}, functions={"abs": abs})
     assert simple_eval("x.y.z + 8", values={("x", "y", "z"): 34}) == 42
+
+
+def test_strict_is():
+    evaluator = Evaluator(EvaluationUniverse(), loose_is_operator=False)
+    with pytest.raises(NoSuchValue):
+        assert evaluator.evaluate_expression("a is b")
+    with pytest.raises(NoSuchValue):
+        assert evaluator.evaluate_expression("a is not b")

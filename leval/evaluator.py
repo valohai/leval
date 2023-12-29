@@ -53,6 +53,7 @@ class Evaluator(ast.NodeTransformer):
         max_time: Optional[float] = None,
         allowed_constant_types: Optional[Iterable[type]] = None,
         allowed_container_types: Optional[Iterable[type]] = None,
+        loose_is_operator: bool = True,
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
@@ -62,6 +63,7 @@ class Evaluator(ast.NodeTransformer):
         self.universe = universe
         self.max_depth = _default_if_none(max_depth, self.default_max_depth)
         self.max_time = float(max_time or 0)
+        self.loose_is_operator = bool(loose_is_operator)
         self.allowed_constant_types = frozenset(
             _default_if_none(
                 allowed_constant_types,
@@ -123,7 +125,7 @@ class Evaluator(ast.NodeTransformer):
         if len(node.ops) != 1:
             raise InvalidOperation("Only simple comparisons are supported", node=node)
         op = node.ops[0]
-        if isinstance(op, (ast.Is, ast.IsNot)):
+        if self.loose_is_operator and isinstance(op, (ast.Is, ast.IsNot)):
             left = self._visit_or_none(node.left)
             right = self._visit_or_none(node.comparators[0])
         else:
