@@ -31,6 +31,9 @@ include = [
 ]
 
 [tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
 ignore = [
     "D100",
     "D101",
@@ -39,7 +42,6 @@ ignore = [
     "D203",
     "D212",
 ]
-line-length = 88
 select = [
     "B",
     "COM",
@@ -51,10 +53,10 @@ select = [
     "W",
 ]
 
-[tool.ruff.flake8-tidy-imports]
+[tool.ruff.lint.flake8-tidy-imports]
 ban-relative-imports = "all"
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "test*" = [
     "D102",
     "D103",
