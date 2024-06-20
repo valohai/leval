@@ -1,6 +1,7 @@
 """
 Tests and examples for the expression rewriting behavior.
 """
+
 import pytest
 
 from leval.rewriter_evaluator import RewriterEvaluator
