@@ -59,6 +59,7 @@ class Evaluator(ast.NodeTransformer):
         allowed_constant_types: Optional[Iterable[type]] = None,
         allowed_container_types: Optional[Iterable[type]] = None,
         loose_is_operator: bool = True,
+        loose_not_operator: bool = True,
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
@@ -69,6 +70,7 @@ class Evaluator(ast.NodeTransformer):
         self.max_depth = _default_if_none(max_depth, self.default_max_depth)
         self.max_time = float(max_time or 0)
         self.loose_is_operator = bool(loose_is_operator)
+        self.loose_not_operator = bool(loose_not_operator)
         self.allowed_constant_types = frozenset(
             _default_if_none(
                 allowed_constant_types,
@@ -183,7 +185,12 @@ class Evaluator(ast.NodeTransformer):
         return self.universe.evaluate_bool_op(node.op, value_getters)
 
     def visit_UnaryOp(self, node):  # noqa: D102
-        operand = self.visit(node.operand)
+        try:
+            operand = self.visit(node.operand)
+        except NoSuchValue:
+            if self.loose_not_operator and isinstance(node.op, ast.Not):
+                return True
+            raise
         if isinstance(node.op, ast.UAdd):
             return +operand
         if isinstance(node.op, ast.USub):
