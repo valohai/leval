@@ -206,3 +206,14 @@ def test_strict_is():
         assert evaluator.evaluate_expression("a is b")
     with pytest.raises(NoSuchValue):
         assert evaluator.evaluate_expression("a is not b")
+
+
+def test_loose_not():
+    evaluator = Evaluator(EvaluationUniverse(), loose_not_operator=True)
+    assert evaluator.evaluate_expression("not a")
+
+
+def test_strict_not():
+    evaluator = Evaluator(EvaluationUniverse(), loose_not_operator=False)
+    with pytest.raises(NoSuchValue):
+        evaluator.evaluate_expression("not a")

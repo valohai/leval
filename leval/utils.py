@@ -1,5 +1,7 @@
 import ast
-from typing import Tuple
+import io
+import tokenize
+from typing import Iterable, Tuple
 
 from leval.excs import InvalidAttribute
 
@@ -31,3 +33,12 @@ def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
 
     walk_attr(node)
     return tuple(str(bit) for bit in attr_bits[::-1])
+
+
+def tokenize_expression(expression: str) -> Iterable[tokenize.TokenInfo]:
+    """
+    Tokenize the given expression and return the tokens.
+
+    Will likely misbehave if the expression is e.g. multi-line.
+    """
+    return tokenize.generate_tokens(io.StringIO(expression).readline)
