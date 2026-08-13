@@ -13,10 +13,10 @@ authors = [
     { name = "Valohai", email = "info@valohai.com" },
 ]
 
-[project.optional-dependencies]
-test = [
-    "pytest-cov==2.10.1",
-    "pytest<7.0",
+[dependency-groups]
+dev = [
+    "pytest>=6.2.5",
+    "pytest-cov>=2.10.1",
 ]
 
 [project.urls]
@@ -42,7 +42,7 @@ ignore = [
     "D203",
     "D212",
 ]
-select = [
+extend-select = [
     "B",
     "COM",
     "D",

@@ -1,4 +1,6 @@
-from typing import Any, Callable, Dict, Optional, Union
+from __future__ import annotations
+
+from typing import Any, Callable
 
 from leval.evaluator import Evaluator
 from leval.universe.simple import SimpleUniverse
@@ -8,10 +10,10 @@ from leval.universe.verifier import VerifierUniverse
 def simple_eval(
     expression: str,
     *,
-    functions: Optional[Dict[str, Callable]] = None,
-    values: Optional[Dict[Union[str, tuple], Any]] = None,
+    functions: dict[str, Callable] | None = None,
+    values: dict[str | tuple, Any] | None = None,
     max_depth=10,
-    max_time: Optional[float] = None,
+    max_time: float | None = None,
     verify_only: bool = False,
 ):
     """
@@ -26,8 +28,9 @@ def simple_eval(
 
     :return: The result of the evaluation.
     """
+    universe: VerifierUniverse | SimpleUniverse
     if verify_only:
-        universe = VerifierUniverse()  # type: Union[VerifierUniverse, SimpleUniverse]
+        universe = VerifierUniverse()
     else:
         universe = SimpleUniverse(functions=(functions or {}), values=(values or {}))
     se = Evaluator(universe, max_depth=max_depth, max_time=max_time)

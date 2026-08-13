@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import ast
 import functools
 import operator
 from numbers import Number
-from typing import Any, Callable, List
+from typing import Any, Callable
 
 from leval.excs import InvalidOperands, InvalidOperation
 from leval.universe.base import BaseEvaluationUniverse
@@ -63,7 +65,7 @@ class EvaluationUniverse(BaseEvaluationUniverse):
     def evaluate_bool_op(  # noqa: D102
         self,
         op: ast.AST,
-        value_getters: List[Callable[[], Any]],
+        value_getters: list[Callable[[], Any]],
     ):
         if isinstance(op, ast.And):
             return all(g() for g in value_getters)

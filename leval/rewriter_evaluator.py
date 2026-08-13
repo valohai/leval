@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import ast
 import keyword
 import tokenize
-from typing import Iterable, List
+from typing import Iterable
 
 from leval.evaluator import Evaluator
 from leval.utils import tokenize_expression
@@ -66,7 +68,7 @@ class RewriterEvaluator(Evaluator):
 
     def process_tokens(
         self,
-        tokens: List[tokenize.TokenInfo],
+        tokens: list[tokenize.TokenInfo],
     ) -> Iterable[tokenize.TokenInfo]:
         """
         Process the token stream before untokenizing it back to a string.
