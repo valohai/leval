@@ -41,7 +41,7 @@ def guard_no_string_mul(args):  # noqa: D103
 
 
 class WeaklyTypedEvaluationUniverse(EvaluationUniverse):
-    ops = {
+    ops = {  # noqa: RUF012
         ast.Add: weakly_typed_operation(operator.add),
         ast.Sub: weakly_typed_operation(operator.sub),
         ast.Mult: weakly_typed_operation(operator.mul, check=guard_no_string_mul),

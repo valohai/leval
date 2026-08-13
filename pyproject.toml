@@ -42,7 +42,7 @@ ignore = [
     "D203",
     "D212",
 ]
-select = [
+extend-select = [
     "B",
     "COM",
     "D",
