@@ -1,6 +1,7 @@
 import ast
 import functools
 import operator
+from numbers import Number
 
 from leval.excs import InvalidOperands
 from leval.universe.default import EvaluationUniverse
@@ -40,11 +41,17 @@ def guard_no_string_mul(args):  # noqa: D103
         raise InvalidOperands("can't multiply strings")
 
 
+def guard_numbers_only_mul(args):  # noqa: D103
+    # Stop e.g. `(1,) * 10**9`.
+    if not all(isinstance(a, Number) for a in args):
+        raise InvalidOperands("multiplication is only allowed between numbers")
+
+
 class WeaklyTypedEvaluationUniverse(EvaluationUniverse):
     ops = {  # noqa: RUF012
         ast.Add: weakly_typed_operation(operator.add),
         ast.Sub: weakly_typed_operation(operator.sub),
-        ast.Mult: weakly_typed_operation(operator.mul, check=guard_no_string_mul),
+        ast.Mult: weakly_typed_operation(operator.mul, check=guard_numbers_only_mul),
         ast.Div: weakly_typed_operation(operator.truediv),
         ast.FloorDiv: weakly_typed_operation(operator.floordiv),
         ast.Gt: weakly_typed_operation(operator.gt),

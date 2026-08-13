@@ -20,8 +20,8 @@ as well as a time limit for the evaluation.
 ### Simple API
 
 For many use cases, the `simple_eval()` function is sufficient.
-You can specify a depth limit and a time limit, and optional mappings
-of variables and functions.
+You can specify depth, time and expression size limits,
+and optional mappings of variables and functions.
 
 The `values` mapping can also be keyed by a tuple of strings, which
 is what attribute accesses are folded to.
@@ -47,3 +47,26 @@ Under the hood, `simple_eval` simply
 
 Both of these classes are designed to be easily subclassable. There are examples
 in the `test_leval.py` file.
+
+## Security
+
+`leval` walks the AST itself and never uses `getattr`, subscripting, or calls to
+anything other than the functions you explicitly register by name.
+
+The evaluator is only as safe as what you put into the universe,
+so keep the following in mind:
+
+- **You own the `functions` and `values`.** Any function you register can be
+  called with attacker-controlled arguments, and operators (`==`, `<`, `in`,
+  arithmetic, …) invoke the corresponding dunder methods on the values you
+  provide. Do not register anything with side effects (`open`, `eval`, importers,
+  ORM objects, …) or pass in objects whose comparisons/arithmetic do something
+  dangerous.
+- **`max_time` is cooperative, not preemptive.** It is only checked between AST
+  node visits, so a single slow function call or a single expensive operation
+  runs to completion regardless of the limit. Enforce hard timeouts out of
+  process if you need them.
+- **Exceptions are not all wrapped.** Errors from operators and registered
+  functions (e.g. `ZeroDivisionError`, `TypeError`, `ValueError`) propagate as
+  their native types, not only as `leval.excs.EvaluatorError`. Catch broadly
+  around evaluation.
