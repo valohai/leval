@@ -1,5 +1,12 @@
 ### Changelog
 
+#### [v1.4.0](https://github.com/valohai/leval/compare/v1.3.0...v1.4.0)
+
+> 13 August 2026
+
+- Hardening against long expressions and sequence multiplication [`#16`](https://github.com/valohai/leval/pull/16)
+- Renovations, 2026 [`#17`](https://github.com/valohai/leval/pull/17)
+
 #### [v1.3.0](https://github.com/valohai/leval/compare/v1.2.0...v1.3.0)
 
 > 16 July 2024
