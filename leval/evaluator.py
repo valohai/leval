@@ -22,8 +22,8 @@ except ImportError:
     NoneType = type(None)  # type: ignore
 
 
-DEFAULT_ALLOWED_CONTAINER_TYPES = frozenset((tuple, set))
-DEFAULT_ALLOWED_CONSTANT_TYPES = frozenset(
+DEFAULT_ALLOWED_CONTAINER_TYPES: frozenset[type] = frozenset((tuple, set))
+DEFAULT_ALLOWED_CONSTANT_TYPES: frozenset[type] = frozenset(
     (
         str,
         int,  # NB: this implicitly includes bool
