@@ -2,11 +2,13 @@
 Security-focused tests: sandbox escape and resource-exhaustion scenarios.
 
 The first group asserts that a broad variety of code-execution / introspection
-escapes are refused.  The second group documents resource-exhaustion behaviour:
-the strict universe is safe, while the weakly-typed universes have a known
-memory-amplification vector (see ``test_weakly_typed_tuple_mul_*``).
+escapes are refused.  The second group covers resource-exhaustion behaviour:
+sequence-multiplication amplification is blocked, while the remaining bounds
+(cooperative ``max_time``, structural-only ``verify()``, unwrapped native
+exceptions) are documented so their behaviour stays visible.
 """
 
+import time
 from types import SimpleNamespace
 
 import pytest
@@ -146,50 +148,59 @@ def test_strict_universe_blocks_sequence_multiplication():
         simple_eval("(1,) * 1000000")
 
 
-def test_weakly_typed_tuple_mul_amplifies_memory():
+def test_weakly_typed_sequence_mul_is_blocked():
     """
-    Pin the known ``tuple * int`` amplification in weakly-typed universes.
+    Weakly-typed universes must refuse ``sequence * int`` amplification.
 
-    ``guard_no_string_mul`` only blocks ``str`` operands, so a tuple literal
-    multiplied by a large integer allocates a proportionally huge tuple in a
-    single, non-preemptible operation.  ``max_time`` cannot interrupt it because
-    the time limit is only checked between AST node visits.  With a large enough
-    multiplier this is an out-of-memory denial of service.
-
-    This test pins the *current* (vulnerable) behaviour with a small multiplier.
-    If sequence multiplication is later restricted, update this test.
+    ``guard_numbers_only_mul`` allows multiplication only between numbers, so a
+    tuple literal multiplied by a large integer -- which would otherwise allocate
+    a proportionally huge tuple in a single, non-preemptible operation -- is
+    rejected instead of executed.
     """
     uni = WeaklyTypedSimpleUniverse(values={}, functions={})
-    result = Evaluator(uni).evaluate_expression("(1,) * 100000")
-    assert isinstance(result, tuple)
-    assert len(result) == 100000
+    with pytest.raises(InvalidOperands):
+        Evaluator(uni).evaluate_expression("(1,) * 1000000000")
+    # ...while multiplying numbers still works.
+    assert Evaluator(uni).evaluate_expression("6 * 7") == 42
+    # CommonBooleanEvaluator is likewise protected.
+    with pytest.raises(InvalidOperands):
+        CommonBooleanEvaluator().evaluate("(1,) * 1000000000", {})
 
 
-def test_verify_does_not_catch_memory_bomb():
+def test_verify_is_structural_only():
     """
-    Show verify() blesses an expression that would OOM at evaluate() time.
+    Show verify() blesses an expression that raises at evaluate() time.
 
-    verify() uses the no-op VerifierUniverse, so it is a syntactic / structural
-    check, not a resource-safety guarantee.
+    verify() uses the no-op VerifierUniverse, which does not perform the actual
+    operations, so it is a syntactic / structural check only -- not a guarantee
+    that evaluate() will succeed or stay within resource limits.
     """
-    assert CommonBooleanEvaluator().verify("(1,) * 1000000000") is True
+    assert CommonBooleanEvaluator().verify("1 / 0") is True
+    with pytest.raises(ZeroDivisionError):
+        CommonBooleanEvaluator().evaluate("1 / 0", {})
 
 
 def test_max_time_is_not_preemptive_within_one_operation():
     """
     Show max_time cannot interrupt work done inside a single node visit.
 
-    max_time is checked only at node-visit boundaries. A tuple multiplication is
-    one ``visit_BinOp`` call: the whole (potentially huge) tuple is allocated
-    before control returns and the next time check runs. Here a 5,000,000-element
-    tuple is built and returned despite a near-zero time budget -- max_time is a
-    coarse, cooperative bound, not a hard timeout, and does not defend against the
-    sequence-multiplication amplification above.
+    max_time is only checked at node-visit boundaries, so a single slow function
+    call (or any single expensive operation) runs to completion regardless of the
+    limit. Here a function that sleeps well past the budget still returns its
+    value -- max_time is a coarse, cooperative bound, not a hard timeout.
     """
-    uni = WeaklyTypedSimpleUniverse(values={}, functions={})
-    result = Evaluator(uni, max_time=0.0001).evaluate_expression("(1,) * 5000000")
-    assert isinstance(result, tuple)
-    assert len(result) == 5000000
+
+    def slow():
+        time.sleep(0.05)
+        return 123
+
+    result = simple_eval(
+        "slow()",
+        functions={"slow": slow},
+        max_time=0.0001,
+        max_depth=5,
+    )
+    assert result == 123
 
 
 @pytest.mark.parametrize(
