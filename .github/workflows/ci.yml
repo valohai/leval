@@ -23,10 +23,8 @@ jobs:
           python-version: ${{ matrix.python-version }}
           activate-environment: "true"
           enable-cache: false
-      - name: Install dependencies
-        run: pip install -e .[test]
       - name: Test with pytest
-        run: pytest -v --cov .
+        run: uv run pytest -v --cov .
       - uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
   lint:
     runs-on: ubuntu-24.04
