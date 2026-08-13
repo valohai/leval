@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import ast
 import tokenize
-from typing import List
 
 import pytest
 
@@ -12,7 +13,7 @@ from leval.rewriter_utils import (
 from leval.utils import tokenize_expression
 
 
-def converter(tokens: List[tokenize.TokenInfo]):
+def converter(tokens: list[tokenize.TokenInfo]):
     if not tokens:
         return []
     glued_name = "".join(

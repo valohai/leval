@@ -1,12 +1,14 @@
+from __future__ import annotations
+
 import ast
 import io
 import tokenize
-from typing import Iterable, Tuple
+from typing import Iterable
 
 from leval.excs import InvalidAttribute
 
 
-def expand_name(node: ast.Attribute) -> Tuple[str, ...]:
+def expand_name(node: ast.Attribute) -> tuple[str, ...]:
     """
     Turn an Attribute node into a tuple of identifier strings.
 

@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import keyword
 import tokenize
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, Tuple, Union
 
 from leval.excs import NoSuchFunction
 from leval.rewriter_evaluator import RewriterEvaluator
@@ -30,7 +32,7 @@ def _rewrite_keyword(kw: str) -> str:
     return kw
 
 
-def _convert_dash_tokens(tokens: List[tokenize.TokenInfo]):
+def _convert_dash_tokens(tokens: list[tokenize.TokenInfo]):
     if not tokens:
         return []
     glued_name = "".join(
@@ -88,7 +90,7 @@ class CommonBooleanEvaluator:
     universe_class = _CommonUniverse
     evaluator_class = _CommonEvaluator
 
-    def evaluate(self, expr: Optional[str], values: ValuesDict) -> Optional[bool]:
+    def evaluate(self, expr: str | None, values: ValuesDict) -> bool | None:
         """
         Evaluate the given expression against the given values.
 

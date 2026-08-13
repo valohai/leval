@@ -1,5 +1,7 @@
+from __future__ import annotations
+
 import tokenize
-from typing import Callable, Iterable, Iterator, List, Optional
+from typing import Callable, Iterable, Iterator
 
 
 def tokens_are_adjacent(t1: tokenize.TokenInfo, t2: tokenize.TokenInfo) -> bool:
@@ -11,7 +13,7 @@ def tokens_are_adjacent(t1: tokenize.TokenInfo, t2: tokenize.TokenInfo) -> bool:
     return t1.end[0] == t2.start[0] and t1.end[1] == t2.start[1]
 
 
-def make_glued_name_token(tokens: List[tokenize.TokenInfo], name: str):
+def make_glued_name_token(tokens: list[tokenize.TokenInfo], name: str):
     """
     Create a new token for an identifier that spans the given token position range.
 
@@ -32,7 +34,7 @@ def make_glued_name_token(tokens: List[tokenize.TokenInfo], name: str):
 
 def get_parts_from_dashed_identifier_tokens(
     tokens: Iterable[tokenize.TokenInfo],
-    separator: Optional[str] = None,
+    separator: str | None = None,
 ) -> Iterable[str]:
     """
     Yield the parts of a dashed identifier from the given token stream.
@@ -53,7 +55,7 @@ def get_parts_from_dashed_identifier_tokens(
 def _maybe_process_dash_identifier(
     initial_token: tokenize.TokenInfo,
     tok_iter: Iterator[tokenize.TokenInfo],
-    converter: Callable[[List[tokenize.TokenInfo]], Iterable[tokenize.TokenInfo]],
+    converter: Callable[[list[tokenize.TokenInfo]], Iterable[tokenize.TokenInfo]],
 ):
     tokens = [initial_token]
     while True:
@@ -80,8 +82,8 @@ def _maybe_process_dash_identifier(
 
 
 def convert_dash_identifiers(
-    tokens: List[tokenize.TokenInfo],
-    converter: Callable[[List[tokenize.TokenInfo]], Iterable[tokenize.TokenInfo]],
+    tokens: list[tokenize.TokenInfo],
+    converter: Callable[[list[tokenize.TokenInfo]], Iterable[tokenize.TokenInfo]],
 ) -> Iterable[tokenize.TokenInfo]:
     """
     Convert dashed identifiers in the given token stream.

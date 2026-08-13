@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import ast
 import time
 from functools import partial
-from typing import Any, Iterable, Optional
+from typing import Any, Iterable
 
 from leval.excs import (
     InvalidConstant,
@@ -54,18 +56,18 @@ class Evaluator(ast.NodeTransformer):
         self,
         universe: BaseEvaluationUniverse,
         *,
-        max_depth: Optional[int] = None,
-        max_time: Optional[float] = None,
-        allowed_constant_types: Optional[Iterable[type]] = None,
-        allowed_container_types: Optional[Iterable[type]] = None,
+        max_depth: int | None = None,
+        max_time: float | None = None,
+        allowed_constant_types: Iterable[type] | None = None,
+        allowed_container_types: Iterable[type] | None = None,
         loose_is_operator: bool = True,
         loose_not_operator: bool = True,
     ):
         """
         Initialize an evaluator with access to the given evaluation universe.
         """
-        self.depth = None  # type: Optional[int]
-        self.start_time = None  # type: Optional[float]
+        self.depth: int | None = None
+        self.start_time: float | None = None
         self.universe = universe
         self.max_depth = _default_if_none(max_depth, self.default_max_depth)
         self.max_time = float(max_time or 0)

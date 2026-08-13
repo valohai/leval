@@ -1,4 +1,6 @@
-from typing import Any, Callable, Dict, Union
+from __future__ import annotations
+
+from typing import Any, Callable
 
 from leval.excs import NoSuchFunction, NoSuchValue
 from leval.universe.default import EvaluationUniverse
@@ -8,8 +10,8 @@ class SimpleUniverse(EvaluationUniverse):
     def __init__(
         self,
         *,
-        functions: Dict[str, Callable],
-        values: Dict[Union[str, tuple], Any],
+        functions: dict[str, Callable],
+        values: dict[str | tuple, Any],
     ):
         """
         Initialize a simple evaluation universe.

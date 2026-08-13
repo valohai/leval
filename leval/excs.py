@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import ast
-from typing import Optional
 
 
 class EvaluatorError(Exception):
@@ -7,7 +8,7 @@ class EvaluatorError(Exception):
         self,
         message: str,
         *,
-        node: Optional[ast.AST] = None,
+        node: ast.AST | None = None,
     ) -> None:
         super().__init__(message)
         self.node = node

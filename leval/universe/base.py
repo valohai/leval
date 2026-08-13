@@ -1,11 +1,13 @@
+from __future__ import annotations
+
 import ast
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable
 
 from leval.excs import InvalidOperation, NoSuchFunction, NoSuchValue
 
 
 class BaseEvaluationUniverse:
-    def get_value(self, name: Union[str, Tuple[str]]) -> Any:
+    def get_value(self, name: str | tuple[str]) -> Any:
         """
         Get the value for a given name.
 
@@ -14,7 +16,7 @@ class BaseEvaluationUniverse:
         """
         raise NoSuchValue(f"No value {name}")  # pragma: no cover
 
-    def evaluate_function(self, name: str, arg_getters: List[Callable[[], Any]]) -> Any:
+    def evaluate_function(self, name: str, arg_getters: list[Callable[[], Any]]) -> Any:
         """
         Evaluate a function with the given arguments.
 
@@ -34,7 +36,7 @@ class BaseEvaluationUniverse:
             node=op,
         )
 
-    def evaluate_bool_op(self, op: ast.AST, value_getters: List[Callable[[], Any]]):
+    def evaluate_bool_op(self, op: ast.AST, value_getters: list[Callable[[], Any]]):
         """
         Evaluate a boolean operation with the given arguments.
 
