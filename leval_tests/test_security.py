@@ -14,7 +14,7 @@ from types import SimpleNamespace
 import pytest
 
 from leval.evaluator import Evaluator
-from leval.excs import EvaluatorError, InvalidOperands
+from leval.excs import EvaluatorError, InvalidOperands, TooComplex
 from leval.extras.common_boolean_evaluator import CommonBooleanEvaluator
 from leval.simple import simple_eval
 from leval.universe.weakly_typed import WeaklyTypedSimpleUniverse
@@ -140,6 +140,29 @@ def test_host_object_attributes_are_never_getattr():
 # --------------------------------------------------------------------------
 # Resource exhaustion
 # --------------------------------------------------------------------------
+
+
+def test_expression_length_is_capped_before_parsing():
+    """
+    An over-long expression is rejected before ``ast.parse`` runs.
+
+    Without this bound, a large payload would be parsed (and, for the rewriter,
+    tokenized) in full before any depth/time limit could apply.
+    """
+    long_expr = "min(" + ",".join(["1"] * 200) + ")"  # valid, evaluates to 1
+    with pytest.raises(TooComplex):
+        simple_eval(long_expr, functions={"min": min}, max_length=50, max_depth=5)
+    # The same expression is accepted when the length check is disabled.
+    assert (
+        simple_eval(long_expr, functions={"min": min}, max_length=0, max_depth=5) == 1
+    )
+
+
+def test_default_length_limit_blocks_huge_expression():
+    """The default length cap rejects a multi-megabyte expression string."""
+    huge_expr = "(" + ",".join(["1"] * 500000) + ")"
+    with pytest.raises(TooComplex):
+        simple_eval(huge_expr, max_depth=5)
 
 
 def test_strict_universe_blocks_sequence_multiplication():

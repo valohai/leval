@@ -51,6 +51,7 @@ class Evaluator(ast.NodeTransformer):
     default_allowed_constant_types: Iterable[type] = DEFAULT_ALLOWED_CONSTANT_TYPES
     default_allowed_container_types: Iterable[type] = DEFAULT_ALLOWED_CONTAINER_TYPES
     default_max_depth = 10
+    default_max_length = 100_000
 
     def __init__(
         self,
@@ -58,6 +59,7 @@ class Evaluator(ast.NodeTransformer):
         *,
         max_depth: int | None = None,
         max_time: float | None = None,
+        max_length: int | None = None,
         allowed_constant_types: Iterable[type] | None = None,
         allowed_container_types: Iterable[type] | None = None,
         loose_is_operator: bool = True,
@@ -71,6 +73,7 @@ class Evaluator(ast.NodeTransformer):
         self.universe = universe
         self.max_depth = _default_if_none(max_depth, self.default_max_depth)
         self.max_time = float(max_time or 0)
+        self.max_length = _default_if_none(max_length, self.default_max_length)
         self.loose_is_operator = bool(loose_is_operator)
         self.loose_not_operator = bool(loose_not_operator)
         self.allowed_constant_types = frozenset(
@@ -90,6 +93,10 @@ class Evaluator(ast.NodeTransformer):
         """
         Evaluate the given expression and return the ultimate result.
         """
+        if self.max_length and len(expression) > self.max_length:
+            raise TooComplex(
+                f"Expression is too long ({len(expression)} > {self.max_length})",
+            )
         self.depth = 0
         self.start_time = time.time()
         return self.visit(self.parse(expression))

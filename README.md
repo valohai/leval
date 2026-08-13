@@ -20,8 +20,8 @@ as well as a time limit for the evaluation.
 ### Simple API
 
 For many use cases, the `simple_eval()` function is sufficient.
-You can specify a depth limit and a time limit, and optional mappings
-of variables and functions.
+You can specify depth, time and expression size limits,
+and optional mappings of variables and functions.
 
 The `values` mapping can also be keyed by a tuple of strings, which
 is what attribute accesses are folded to.
